@@ -143,7 +143,7 @@ def load_and_chunk_file(path, max_chunk_size, cwd):
                                content, max_chunk_size))
 
 
-def main() -> None:
+def indexer() -> None:
 
     cwd = Path.cwd()
     raw = cwd / "data" / "raw" / "vllm-0.10.1"
@@ -155,6 +155,6 @@ def main() -> None:
         chunks.append(load_and_chunk_file(
             path, max_chunk_size, cwd))
 
+    chunks = [word for sub in chunks for word in sub]
 
-if __name__ == "__main__":
-    main()
+    return chunks
