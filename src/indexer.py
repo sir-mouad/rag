@@ -1,7 +1,8 @@
 from pathlib import Path
-from models import Chunk
+from src.models import Chunk
 import re
 import ast
+from tqdm import tqdm
 
 
 def chunk_python(path, content, max_chunk_size):
@@ -143,15 +144,13 @@ def load_and_chunk_file(path, max_chunk_size, cwd):
                                content, max_chunk_size))
 
 
-def indexer() -> None:
+def indexer(max_chunk_size) -> None:
 
     cwd = Path.cwd()
     raw = cwd / "data" / "raw" / "vllm-0.10.1"
     paths = [f for f in raw.rglob("*") if f.suffix in (".py", ".md")]
-    paths = raw.rglob("*.py")
-    max_chunk_size = 2000
     chunks = []
-    for path in paths:
+    for path in tqdm(list(paths), desc="Chunking", unit=" file"):
         chunks.append(load_and_chunk_file(
             path, max_chunk_size, cwd))
 

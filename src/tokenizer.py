@@ -1,8 +1,7 @@
-from indexer import indexer
 import re
+from tqdm import tqdm
 
-
-def tokenizer(text):
+def build_token(text):
     split_text = re.findall(r"[a-zA-Z0-9]+", text)
     new_split_text = []
     for str in split_text:
@@ -14,10 +13,9 @@ def tokenizer(text):
     return [str.lower() for str in new_split_text]
 
 
-def main(chunks):
-    chunks = indexer()
+def tokenizer(chunks):
     tokenized = []
-    for c in chunks:
-        tokenized.append(tokenizer(c.text))
+    for c in tqdm(chunks, desc="tokenized", unit=" chunk"):
+        tokenized.append(build_token(c.text))
 
     return tokenized
