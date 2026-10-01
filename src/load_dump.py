@@ -1,6 +1,7 @@
 import json
 import pickle
 import os
+from pathlib import Path
 
 
 def dump_chunks(chunks):
@@ -33,3 +34,11 @@ def load_dataset(dataset_path):
         data = json.load(f)
     questions = data["rag_questions"]
     return [(q["question_id"], q["question"]) for q in questions]
+
+
+def dump_search_results(result, dataset_path, save_directory):
+    os.makedirs(save_directory, exist_ok=True)
+    filename = Path(dataset_path).name
+    output_path = Path(save_directory) / filename
+    with open(output_path, "w") as f:
+        json.dump(result.model_dump(), f, indent=2)
