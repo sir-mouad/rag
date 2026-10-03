@@ -4,8 +4,10 @@ from src.tokenizer import tokenizer, build_token
 from src.bm25 import build_bm25
 from src.load_dump import dump_chunks, dump_tokenze, load_chunks, load_tokenze, load_dataset, dump_search_results
 from tqdm import tqdm
-from src.models import MinimalSource, MinimalSearchResults, StudentSearchResults
-
+from src.models import MinimalSource, MinimalSearchResults, StudentSearchResults, MinimalAnswer
+from src.generator import load_model, build_prompt
+import uuid
+import re
 
 def index(max_chunk_size=2000):
     chunks = indexer(max_chunk_size)
@@ -16,7 +18,7 @@ def index(max_chunk_size=2000):
         f"Ingestion complete! Indexed {len(chunks)} chunks under data/processed/")
 
 
-def search(query, k=5):
+def search(query, k):
     chunks = load_chunks()
     tokenized = load_tokenze()
     bm25 = build_bm25(tokenized)
@@ -29,7 +31,7 @@ def search(query, k=5):
             f"{chunk['file_path']} [{chunk['first_character_index']}:{chunk['last_character_index']}]")
 
 
-def search_dataset(dataset_path, k=5, save_directory="data/output/search_results"):
+def search_dataset(dataset_path, k, save_directory="data/output/search_results"):
     chunks = load_chunks()
     tokenized = load_tokenze()
     bm25 = build_bm25(tokenized)
@@ -53,6 +55,48 @@ def search_dataset(dataset_path, k=5, save_directory="data/output/search_results
 
     result = StudentSearchResults(search_results=search_results, k=k)
     dump_search_results(result, dataset_path, save_directory)
+
+
+def answer(query, k):
+    chunks = load_chunks()
+    tokenized = load_tokenze()
+    bm25 = build_bm25(tokenized)
+    query_tok = build_token(query)
+    scores = bm25.get_scores(query_tok)
+    top_k_indices = scores.argsort()[::-1][:k]
+    sources = []
+    texts = []
+    for i in top_k_indices:
+        chunk = chunks[i]
+        sources.append(MinimalSource(file_path=chunk["file_path"],
+                                     first_character_index=chunk["first_character_index"],
+                                     last_character_index=chunk["last_character_index"]))
+        texts.append(chunk["text"])
+    content = "\n\n".join(texts)
+    llm_tokenizer, model = load_model()
+    prompt = build_prompt(query, content)
+    messages = [{"role": "user", "content": prompt}]
+    inputs = llm_tokenizer.apply_chat_template(
+        messages,
+        add_generation_prompt=True,
+        tokenize=True,
+        return_dict=True,
+        return_tensors="pt"
+    )
+
+    output = model.generate(**inputs, max_new_tokens=250)
+    answer_text = llm_tokenizer.decode(
+        output[0][inputs["input_ids"].shape[-1]:], skip_special_tokens=True
+    )
+    answer_text = re.sub(r"<think>.*?</think>\s*", "", answer_text, flags=re.DOTALL).strip()
+    result = MinimalAnswer(
+        question_id=str(uuid.uuid4()),
+        question=query,
+        retrieved_sources=sources,
+        answer=answer_text
+    )
+
+    print(result.model_dump_json(indent=2))
 
 
 if __name__ == "__main__":

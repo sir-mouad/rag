@@ -110,7 +110,7 @@ def chunk_markdown(path, content, max_chunk_size):
     for start, end in zip(true_headers, true_headers[1:]):
         section = content[start:end]
         if len(section) <= max_chunk_size:
-            if not section[start:end].strip():
+            if not section.strip():
                 continue
             chunks.append(Chunk(file_path=path, first_character_index=start,
                           last_character_index=end, text=section))

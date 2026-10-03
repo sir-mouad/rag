@@ -77,7 +77,7 @@ curl -o- http://localhost:30080/models
 
 To send an actual chatting request, you can issue a curl request to the OpenAI `/completion` endpoint:
 
-
+```bash
 curl -X POST http://localhost:30080/completions \
   -H "Content-Type: application/json" \
   -d '{
@@ -109,7 +109,7 @@ curl -X POST http://localhost:30080/completions \
 
 To remove the deployment, run:
 
-
+```bash
 sudo helm uninstall vllm
 ```
 
