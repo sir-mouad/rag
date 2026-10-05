@@ -2,9 +2,9 @@ import fire
 from src.indexer import indexer
 from src.tokenizer import tokenizer, build_token
 from src.bm25 import build_bm25
-from src.load_dump import dump_chunks, dump_tokenze, load_chunks, load_tokenze, load_dataset, dump_search_results
+from src.load_dump import dump_chunks, dump_tokenze, load_chunks, load_tokenze, load_dataset, dump_search_results, load_search_results, read_part
 from tqdm import tqdm
-from src.models import MinimalSource, MinimalSearchResults, StudentSearchResults, MinimalAnswer
+from src.models import MinimalSource, MinimalSearchResults, StudentSearchResults, MinimalAnswer, StudentSearchResultsAndAnswer
 from src.generator import load_model, build_prompt
 import uuid
 import re
@@ -54,7 +54,8 @@ def search_dataset(dataset_path, k, save_directory="data/output/search_results")
         ))
 
     result = StudentSearchResults(search_results=search_results, k=k)
-    dump_search_results(result, dataset_path, save_directory)
+    output_path = dump_search_results(result, dataset_path, save_directory)
+    print(f"Saved student_search_results to {output_path}")
 
 
 def answer(query, k):
@@ -97,6 +98,46 @@ def answer(query, k):
     )
 
     print(result.model_dump_json(indent=2))
+
+
+def answer_dataset(student_search_results_path, save_directory):
+    llm_tokenizer, model = load_model()
+    search_results = load_search_results(student_search_results_path)
+    results = []
+    for res in search_results["search_results"]:
+        ques_id = res["question_id"]
+        ques = res["question"]
+        sources = res["retrieved_sources"]
+        texts = []
+        for s in sources:
+            texts.append(read_part(s["file_path"], s["first_character_index"], s["last_character_index"]))
+        content = "\n\n".join(texts)
+        prompt = build_prompt(ques, content)
+        messages = [{"role": "user", "content": prompt}]
+        inputs = llm_tokenizer.apply_chat_template(
+        messages,
+        add_generation_prompt=True,
+        tokenize=True,
+        return_dict=True,
+        return_tensors="pt"
+    )
+
+        output = model.generate(**inputs, max_new_tokens=250)
+        answer_text = llm_tokenizer.decode(
+            output[0][inputs["input_ids"].shape[-1]:], skip_special_tokens=True
+        )
+        answer_text = re.sub(r"<think>.*?</think>\s*", "", answer_text, flags=re.DOTALL).strip()
+        results.append(MinimalAnswer(
+        question_id=ques_id,
+        question=ques,
+        retrieved_sources=sources,
+        answer=answer_text
+        ))
+
+
+
+
+
 
 
 if __name__ == "__main__":

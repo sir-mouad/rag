@@ -973,13 +973,13 @@
         },
         {
           "file_path": "data/raw/vllm-0.10.1/vllm/model_executor/layers/fused_moe/fused_moe.py",
-          "first_character_index": 13025,
-          "last_character_index": 15000
+          "first_character_index": 4425,
+          "last_character_index": 6400
         },
         {
           "file_path": "data/raw/vllm-0.10.1/vllm/model_executor/layers/fused_moe/fused_moe.py",
-          "first_character_index": 4425,
-          "last_character_index": 6400
+          "first_character_index": 13025,
+          "last_character_index": 15000
         },
         {
           "file_path": "data/raw/vllm-0.10.1/vllm/_custom_ops.py",
@@ -2835,14 +2835,14 @@
           "last_character_index": 11149
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/docs/features/tool_calling.md",
-          "first_character_index": 3183,
-          "last_character_index": 4941
-        },
-        {
           "file_path": "data/raw/vllm-0.10.1/vllm/usage/usage_lib.py",
           "first_character_index": 1460,
           "last_character_index": 2402
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/docs/features/tool_calling.md",
+          "first_character_index": 3183,
+          "last_character_index": 4941
         },
         {
           "file_path": "data/raw/vllm-0.10.1/docs/design/multiprocessing.md",
@@ -4082,9 +4082,9 @@
           "last_character_index": 5213
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/docs/design/p2p_nccl_connector.md",
-          "first_character_index": 0,
-          "last_character_index": 1776
+          "file_path": "data/raw/vllm-0.10.1/examples/offline_inference/disaggregated_prefill.py",
+          "first_character_index": 2194,
+          "last_character_index": 4137
         }
       ]
     },

@@ -42,3 +42,16 @@ def dump_search_results(result, dataset_path, save_directory):
     output_path = Path(save_directory) / filename
     with open(output_path, "w") as f:
         json.dump(result.model_dump(), f, indent=2)
+    return output_path
+
+def load_search_results(path):
+    with open(path, "r") as f:
+        data = json.load(f)
+    return data
+
+def read_part(path, first_character_index, last_character_index):
+    with open(path, "r") as f:
+        content = f.read()
+        part = content[first_character_index, last_character_index]
+    return part
+
