@@ -52,6 +52,5 @@ def load_search_results(path):
 def read_part(path, first_character_index, last_character_index):
     with open(path, "r") as f:
         content = f.read()
-        part = content[first_character_index, last_character_index]
+        part = content[first_character_index:last_character_index]
     return part
-
