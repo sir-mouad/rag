@@ -5,7 +5,7 @@ from src.bm25 import build_bm25
 from src.load_dump import dump_chunks, dump_tokenze, load_chunks, load_tokenze, load_dataset, dump_search_results, load_search_results, read_part
 from tqdm import tqdm
 from src.models import MinimalSource, MinimalSearchResults, StudentSearchResults, MinimalAnswer, StudentSearchResultsAndAnswer
-from src.generator import load_model, build_prompt
+from src.generator import load_model, build_prompt, get_answer_text
 import uuid
 import re
 
@@ -60,6 +60,7 @@ def search_dataset(dataset_path, k, save_directory="data/output/search_results")
 
 
 def answer(query, k):
+    llm_tokenizer, model = load_model()
     chunks = load_chunks()
     tokenized = load_tokenze()
     bm25 = build_bm25(tokenized)
@@ -75,23 +76,8 @@ def answer(query, k):
                                      last_character_index=chunk["last_character_index"]))
         texts.append(chunk["text"])
     content = "\n\n".join(texts)
-    llm_tokenizer, model = load_model()
     prompt = build_prompt(query, content)
-    messages = [{"role": "user", "content": prompt}]
-    inputs = llm_tokenizer.apply_chat_template(
-        messages,
-        add_generation_prompt=True,
-        tokenize=True,
-        return_dict=True,
-        return_tensors="pt"
-    )
-
-    output = model.generate(**inputs, max_new_tokens=250)
-    answer_text = llm_tokenizer.decode(
-        output[0][inputs["input_ids"].shape[-1]:], skip_special_tokens=True
-    )
-    answer_text = re.sub(r"<think>.*?</think>\s*", "",
-                         answer_text, flags=re.DOTALL).strip()
+    answer_text = get_answer_text(prompt, llm_tokenizer, model)
     result = MinimalAnswer(
         question_id=str(uuid.uuid4()),
         question=query,
@@ -117,21 +103,7 @@ def answer_dataset(student_search_results_path, save_directory):
                 s["file_path"], s["first_character_index"], s["last_character_index"]))
         content = "\n\n".join(texts)
         prompt = build_prompt(ques, content)
-        messages = [{"role": "user", "content": prompt}]
-        inputs = llm_tokenizer.apply_chat_template(
-            messages,
-            add_generation_prompt=True,
-            tokenize=True,
-            return_dict=True,
-            return_tensors="pt"
-        )
-
-        output = model.generate(**inputs, max_new_tokens=250)
-        answer_text = llm_tokenizer.decode(
-            output[0][inputs["input_ids"].shape[-1]:], skip_special_tokens=True
-        )
-        answer_text = re.sub(r"<think>.*?</think>\s*", "",
-                             answer_text, flags=re.DOTALL).strip()
+        answer_text = get_answer_text(prompt, llm_tokenizer, model)
         results.append(MinimalAnswer(
             question_id=ques_id,
             question=ques,
@@ -143,8 +115,10 @@ def answer_dataset(student_search_results_path, save_directory):
         search_results=results,
         k=k
     )
-    output_path = dump_search_results(final_results, student_search_results_path, save_directory)
+    output_path = dump_search_results(
+        final_results, student_search_results_path, save_directory)
     print(f"Saved student_search_results_and_answer to {output_path}")
+
 
 if __name__ == "__main__":
     fire.Fire()
