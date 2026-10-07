@@ -19,7 +19,10 @@ def dump_tokenze(tokenized):
 
 def load_chunks():
     with open("data/processed/chunks.json", "r") as f:
-        chunks = json.load(f)
+        try:
+            chunks = json.load(f)
+        except Exception:
+            raise ValueError(f"Invalid json: the data/processed/chunks.json have invalid json format")
     return chunks
 
 
@@ -31,7 +34,10 @@ def load_tokenze():
 
 def load_dataset(dataset_path):
     with open(dataset_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
+        try:
+            data = json.load(f)
+        except Exception:
+            raise ValueError(f"Invalid json: the {dataset_path} have invalid json format")
     questions = data["rag_questions"]
     return [(q["question_id"], q["question"]) for q in questions]
 
@@ -44,13 +50,19 @@ def dump_search_results(result, dataset_path, save_directory):
         json.dump(result.model_dump(), f, indent=2)
     return output_path
 
+
 def load_search_results(path):
-    with open(path, "r") as f:
-        data = json.load(f)
+    with open(path, "r", encoding="utf-8") as f:
+        try:
+            data = json.load(f)
+        except Exception:
+            raise ValueError(f"Invalid json: the {path} have invalid json format")
+
     return data
 
+
 def read_part(path, first_character_index, last_character_index):
-    with open(path, "r") as f:
+    with open(path, "r", encoding="utf-8") as f:
         content = f.read()
         part = content[first_character_index:last_character_index]
     return part
