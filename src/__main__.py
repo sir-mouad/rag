@@ -6,15 +6,29 @@ from src.load_dump import dump_chunks, dump_tokenze, load_chunks, load_tokenze, 
 from tqdm import tqdm
 from src.models import MinimalSource, MinimalSearchResults, StudentSearchResults, MinimalAnswer, StudentSearchResultsAndAnswer
 from src.generator import load_model, build_prompt, get_answer_text
+from src.evaluate import evaluate
 import uuid
-import re
+
+
+def check_args(query, k):
+    if not isinstance(k, int) or k <= 0:
+        print("Invalid Argument: --k must be a positive integer")
+        return False
+    if not query.strip():
+        print("Invalid Argument: query must not be empty")
+        return False
+    return True
 
 
 def index(max_chunk_size=2000):
     try:
-        if max_chunk_size <= 0:
-            raise ValueError("Invalid Argument: max_chunk_size <= 0")
+        if not isinstance(max_chunk_size, int) or not 1 <= max_chunk_size <= 2000:
+            print("Invalid Argument: --max_chunk_size must be an integer between 1 and 2000")
+            return
         chunks = indexer(max_chunk_size)
+        if not chunks:
+            print("Error: no chunks were created, nothing to index.")
+            return
         tokenized = tokenizer(chunks)
         dump_chunks(chunks)
         dump_tokenze(tokenized)
@@ -26,13 +40,17 @@ def index(max_chunk_size=2000):
 
 def search(query, k):
     try:
-        if query == "" or k <= 0:
-            raise ValueError("Invalid Argument: nonsensical query or k <= 0")
+        query = str(query)
+        if not check_args(query, k):
+            return
         chunks = load_chunks()
         tokenized = load_tokenze()
         bm25 = build_bm25(tokenized)
         query_tok = build_token(query)
         scores = bm25.get_scores(query_tok)
+        if not query_tok or scores.max() <= 0:
+            print("No relevant results found for this query.")
+            return
         top_k_indices = scores.argsort()[::-1][:k]
         for i in top_k_indices:
             chunk = chunks[i]
@@ -44,8 +62,9 @@ def search(query, k):
 
 def search_dataset(dataset_path, k, save_directory):
     try:
-        if k <= 0:
-            raise ValueError("Invalid Argument: K <= 0")
+        if not isinstance(k, int) or k <= 0:
+            print("Invalid Argument: --k must be a positive integer")
+            return
         chunks = load_chunks()
         tokenized = load_tokenze()
         bm25 = build_bm25(tokenized)
@@ -76,14 +95,18 @@ def search_dataset(dataset_path, k, save_directory):
 
 def answer(query, k):
     try:
-        if query == "" or k <= 0:
-            raise ValueError("Invalid Argument: nonsensical query or k <= 0")
-        llm_tokenizer, model = load_model()
+        query = str(query)
+        if not check_args(query, k):
+            return
         chunks = load_chunks()
         tokenized = load_tokenze()
         bm25 = build_bm25(tokenized)
         query_tok = build_token(query)
         scores = bm25.get_scores(query_tok)
+        if not query_tok or scores.max() <= 0:
+            print("No relevant results found for this query.")
+            return
+        llm_tokenizer, model = load_model()
         top_k_indices = scores.argsort()[::-1][:k]
         sources = []
         texts = []
@@ -110,21 +133,29 @@ def answer(query, k):
 
 def answer_dataset(student_search_results_path, save_directory):
     try:
-        llm_tokenizer, model = load_model()
         search_results = load_search_results(student_search_results_path)
         k = search_results["k"]
+        llm_tokenizer, model = load_model()
         results = []
         for res in tqdm(search_results["search_results"], desc="Answering", unit="question"):
             ques_id = res["question_id"]
             ques = res["question"]
             sources = res["retrieved_sources"]
-            texts = []
-            for s in sources:
-                texts.append(read_part(
-                    s["file_path"], s["first_character_index"], s["last_character_index"]))
-            content = "\n\n".join(texts)
-            prompt = build_prompt(ques, content)
-            answer_text = get_answer_text(prompt, llm_tokenizer, model)
+            try:
+                texts = []
+                for s in sources:
+                    texts.append(read_part(
+                        s["file_path"], s["first_character_index"], s["last_character_index"]))
+                if not texts:
+                    answer_text = "I don't know."
+                else:
+                    content = "\n\n".join(texts)
+                    prompt = build_prompt(ques, content)
+                    answer_text = get_answer_text(
+                        prompt, llm_tokenizer, model)
+            except Exception as e:
+                print(f"Warning: question {ques_id} failed: {e}")
+                answer_text = "I don't know."
             results.append(MinimalAnswer(
                 question_id=ques_id,
                 question=ques,
@@ -141,10 +172,6 @@ def answer_dataset(student_search_results_path, save_directory):
         print(f"Saved student_search_results_and_answer to {output_path}")
     except Exception as e:
         print(e)
-
-
-def evaluate(student_search_results_path, dataset_path):
-    pass
 
 
 if __name__ == "__main__":

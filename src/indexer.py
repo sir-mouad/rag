@@ -135,8 +135,10 @@ def load_and_chunk_file(path, max_chunk_size, cwd):
     try:
         content = path.read_text(encoding="utf-8")
     except Exception as e:
-        print(e)
-        exit(1)
+        print(f"Warning: could not read {path}: {e}")
+        return []
+    if not content.strip():
+        return []
     if path.suffix == ".py":
         return (chunk_python(str(path.relative_to(cwd)), content, max_chunk_size))
     elif path.suffix == ".md":
@@ -144,16 +146,17 @@ def load_and_chunk_file(path, max_chunk_size, cwd):
                                content, max_chunk_size))
 
 
-def indexer(max_chunk_size) -> None:
+def indexer(max_chunk_size):
 
     cwd = Path.cwd()
     raw = cwd / "data" / "raw" / "vllm-0.10.1"
+    if not raw.is_dir():
+        print(f"Error: directory not found: {raw}")
+        return []
     paths = [f for f in raw.rglob("*") if f.suffix in (".py", ".md")]
     chunks = []
     for path in tqdm(list(paths), desc="Chunking", unit=" file"):
-        chunks.append(load_and_chunk_file(
+        chunks.extend(load_and_chunk_file(
             path, max_chunk_size, cwd))
-
-    chunks = [word for sub in chunks for word in sub]
 
     return chunks
