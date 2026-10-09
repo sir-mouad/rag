@@ -2,28 +2,19 @@ import fire
 from src.indexer import indexer
 from src.tokenizer import tokenizer, build_token
 from src.bm25 import build_bm25
-from src.load_dump import dump_chunks, dump_tokenze, load_chunks, load_tokenze, load_dataset, dump_search_results, load_search_results, read_part
+from src.load_dump import dump_chunks, dump_tokenze, load_chunks, load_tokenze, dump_json, read_part
 from tqdm import tqdm
 from src.models import MinimalSource, MinimalSearchResults, StudentSearchResults, MinimalAnswer, StudentSearchResultsAndAnswer
 from src.generator import load_model, build_prompt, get_answer_text
-from src.evaluate import evaluate
 import uuid
-
-
-def check_args(query, k):
-    if not isinstance(k, int) or k <= 0:
-        print("Invalid Argument: --k must be a positive integer")
-        return False
-    if not query.strip():
-        print("Invalid Argument: query must not be empty")
-        return False
-    return True
+from heplers import check_args, get_iou
 
 
 def index(max_chunk_size=2000):
     try:
         if not isinstance(max_chunk_size, int) or not 1 <= max_chunk_size <= 2000:
-            print("Invalid Argument: --max_chunk_size must be an integer between 1 and 2000")
+            print(
+                "Invalid Argument: --max_chunk_size must be an integer between 1 and 2000")
             return
         chunks = indexer(max_chunk_size)
         if not chunks:
@@ -68,7 +59,7 @@ def search_dataset(dataset_path, k, save_directory):
         chunks = load_chunks()
         tokenized = load_tokenze()
         bm25 = build_bm25(tokenized)
-        questions = load_dataset(dataset_path)
+        questions = load_json(dataset_path)
         search_results = []
         for ques_id, ques in tqdm(questions, desc="searching", unit="question"):
             ques_tok = build_token(ques)
@@ -170,6 +161,43 @@ def answer_dataset(student_search_results_path, save_directory):
         output_path = dump_search_results(
             final_results, student_search_results_path, save_directory)
         print(f"Saved student_search_results_and_answer to {output_path}")
+    except Exception as e:
+        print(e)
+
+
+def evaluate(student_search_results_path, dataset_path):
+    try:
+        search_results = load_json(student_search_results_path)
+        truth = load_json(dataset_path)
+        truth_map = {q["question_id"]: q["sources"]
+                     for q in truth["rag_questions"] if "sources" in q}
+        ks = [1, 3, 5, 10]
+        totals = {k: 0 for k in ks}
+        counted = 0
+        for res in tqdm(search_results["search_results"],
+                        desc="Evaluating", unit="question"):
+            correct = truth_map.get(res["question_id"])
+            if not correct:
+                continue
+            counted += 1
+            for k in ks:
+                top = res["retrieved_sources"][:k]
+                found = 0
+                for c in correct:
+                    if any(is_found(c, r) for r in top):
+                        found += 1
+                totals[k] += found / len(correct)
+        if counted == 0:
+            print("Error: no question could be matched with the ground truth.")
+            return
+        print("Evaluation Results")
+        print("=" * 40)
+        print(f"Questions evaluated: {counted}")
+        for k in ks:
+            recall = totals[k] / counted
+            print(f"Recall@{k}: {recall:.3f} ({recall * 100:.1f}%)")
+    except (KeyError, TypeError):
+        print("Invalid file format: missing fields in the files")
     except Exception as e:
         print(e)
 

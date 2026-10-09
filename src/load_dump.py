@@ -7,7 +7,7 @@ from pathlib import Path
 def dump_chunks(chunks):
     os.makedirs("data/processed", exist_ok=True)
     results = [chunk.model_dump() for chunk in chunks]
-    with open("data/processed/chunks.json", "w") as f:
+    with open("data/processed/chunks.json", "w", encoding="utf-8") as f:
         json.dump(results, f, indent=2)
 
 
@@ -17,52 +17,58 @@ def dump_tokenze(tokenized):
         pickle.dump(tokenized, f)
 
 
+def load_json(path):
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        raise ValueError(f"File not found: {path}")
+    except json.JSONDecodeError:
+        raise ValueError(f"Invalid json: {path} has an invalid json format")
+
+
 def load_chunks():
-    with open("data/processed/chunks.json", "r") as f:
-        try:
-            chunks = json.load(f)
-        except Exception:
-            raise ValueError(f"Invalid json: the data/processed/chunks.json have invalid json format")
-    return chunks
+    if not os.path.exists("data/processed/chunks.json"):
+        raise ValueError("Index not found: run the index command first")
+    return load_json("data/processed/chunks.json")
 
 
 def load_tokenze():
+    if not os.path.exists("data/processed/tokenized.pkl"):
+        raise ValueError("Index not found: run the index command first")
     with open("data/processed/tokenized.pkl", "rb") as f:
-        tokenized = pickle.load(f)
-    return tokenized
+        return pickle.load(f)
 
 
 def load_dataset(dataset_path):
-    with open(dataset_path, "r", encoding="utf-8") as f:
-        try:
-            data = json.load(f)
-        except Exception:
-            raise ValueError(f"Invalid json: the {dataset_path} have invalid json format")
-    questions = data["rag_questions"]
-    return [(q["question_id"], q["question"]) for q in questions]
-
-
-def dump_search_results(result, dataset_path, save_directory):
-    os.makedirs(save_directory, exist_ok=True)
-    filename = Path(dataset_path).name
-    output_path = Path(save_directory) / filename
-    with open(output_path, "w") as f:
-        json.dump(result.model_dump(), f, indent=2)
-    return output_path
+    data = load_json(dataset_path)
+    try:
+        questions = data["rag_questions"]
+        return [(q["question_id"], q["question"]) for q in questions]
+    except (KeyError, TypeError):
+        raise ValueError(f"Invalid dataset: {dataset_path} must contain "
+                         "rag_questions with question_id and question")
 
 
 def load_search_results(path):
-    with open(path, "r", encoding="utf-8") as f:
-        try:
-            data = json.load(f)
-        except Exception:
-            raise ValueError(f"Invalid json: the {path} have invalid json format")
-
+    data = load_json(path)
+    if not isinstance(data, dict) or "k" not in data \
+            or "search_results" not in data:
+        raise ValueError(f"Invalid search results: {path} must contain "
+                         "search_results and k")
     return data
+
+
+def dump_json(result, dataset_path, save_directory):
+    os.makedirs(save_directory, exist_ok=True)
+    filename = Path(dataset_path).name
+    output_path = Path(save_directory) / filename
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(result.model_dump(), f, indent=2)
+    return output_path
 
 
 def read_part(path, first_character_index, last_character_index):
     with open(path, "r", encoding="utf-8") as f:
         content = f.read()
-        part = content[first_character_index:last_character_index]
-    return part
+    return content[first_character_index:last_character_index]
