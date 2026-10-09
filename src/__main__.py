@@ -2,12 +2,12 @@ import fire
 from src.indexer import indexer
 from src.tokenizer import tokenizer, build_token
 from src.bm25 import build_bm25
-from src.load_dump import dump_chunks, dump_tokenze, load_chunks, load_tokenze, dump_json, read_part
+from src.load_dump import dump_chunks, dump_tokenze, load_chunks, load_tokenze, dump_json, read_part, load_json, load_dataset
 from tqdm import tqdm
 from src.models import MinimalSource, MinimalSearchResults, StudentSearchResults, MinimalAnswer, StudentSearchResultsAndAnswer
 from src.generator import load_model, build_prompt, get_answer_text
 import uuid
-from heplers import check_args, get_iou
+from src.heplers import check_args, is_found
 
 
 def index(max_chunk_size=2000):
@@ -52,14 +52,14 @@ def search(query, k):
 
 
 def search_dataset(dataset_path, k, save_directory):
-    try:
+    # try:
         if not isinstance(k, int) or k <= 0:
             print("Invalid Argument: --k must be a positive integer")
             return
         chunks = load_chunks()
         tokenized = load_tokenze()
         bm25 = build_bm25(tokenized)
-        questions = load_json(dataset_path)
+        questions = load_dataset(dataset_path)
         search_results = []
         for ques_id, ques in tqdm(questions, desc="searching", unit="question"):
             ques_tok = build_token(ques)
@@ -78,10 +78,10 @@ def search_dataset(dataset_path, k, save_directory):
             ))
 
         result = StudentSearchResults(search_results=search_results, k=k)
-        output_path = dump_search_results(result, dataset_path, save_directory)
+        output_path = dump_json(result, dataset_path, save_directory)
         print(f"Saved student_search_results to {output_path}")
-    except Exception as e:
-        print(e)
+    # except Exception as e:
+    #     print(e)
 
 
 def answer(query, k):
@@ -124,7 +124,7 @@ def answer(query, k):
 
 def answer_dataset(student_search_results_path, save_directory):
     try:
-        search_results = load_search_results(student_search_results_path)
+        search_results = load_json(student_search_results_path)
         k = search_results["k"]
         llm_tokenizer, model = load_model()
         results = []
@@ -158,7 +158,7 @@ def answer_dataset(student_search_results_path, save_directory):
             search_results=results,
             k=k
         )
-        output_path = dump_search_results(
+        output_path = dump_json(
             final_results, student_search_results_path, save_directory)
         print(f"Saved student_search_results_and_answer to {output_path}")
     except Exception as e:

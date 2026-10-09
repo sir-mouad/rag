@@ -141,7 +141,7 @@ def load_and_chunk_file(path, max_chunk_size, cwd):
         return []
     if path.suffix == ".py":
         return (chunk_python(str(path.relative_to(cwd)), content, max_chunk_size))
-    elif path.suffix == ".md":
+    elif path.suffix == ".md" or  path.suffix == ".txt":
         return (chunk_markdown(str(path.relative_to(cwd)),
                                content, max_chunk_size))
 
@@ -153,7 +153,7 @@ def indexer(max_chunk_size):
     if not raw.is_dir():
         print(f"Error: directory not found: {raw}")
         return []
-    paths = [f for f in raw.rglob("*") if f.suffix in (".py", ".md")]
+    paths = [f for f in raw.rglob("*") if f.suffix in (".py", ".md", ".txt")]
     chunks = []
     for path in tqdm(list(paths), desc="Chunking", unit=" file"):
         chunks.extend(load_and_chunk_file(

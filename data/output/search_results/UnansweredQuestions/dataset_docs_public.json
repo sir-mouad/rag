@@ -106,9 +106,9 @@
           "last_character_index": 946
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/.buildkite/lm-eval-harness/test_lm_eval_correctness.py",
+          "file_path": "data/raw/vllm-0.10.1/docs/features/quantization/quark.md",
           "first_character_index": 0,
-          "last_character_index": 1810
+          "last_character_index": 1824
         }
       ]
     },
@@ -325,14 +325,14 @@
           "last_character_index": 8466
         },
         {
+          "file_path": "data/raw/vllm-0.10.1/tests/system_messages/sonnet3.5_nov2024.txt",
+          "first_character_index": 6990,
+          "last_character_index": 8859
+        },
+        {
           "file_path": "data/raw/vllm-0.10.1/docs/contributing/profiling.md",
           "first_character_index": 0,
           "last_character_index": 1956
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/docs/features/multimodal_inputs.md",
-          "first_character_index": 2659,
-          "last_character_index": 4189
         }
       ]
     },
@@ -610,9 +610,9 @@
           "last_character_index": 1866
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/vllm/model_executor/layers/quantization/ptpc_fp8.py",
+          "file_path": "data/raw/vllm-0.10.1/vllm/model_executor/layers/quantization/compressed_tensors/schemes/compressed_tensors_w4a8_int.py",
           "first_character_index": 0,
-          "last_character_index": 1095
+          "last_character_index": 873
         }
       ]
     },
@@ -1114,9 +1114,9 @@
           "last_character_index": 1381
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/docs/deployment/frameworks/anyscale.md",
-          "first_character_index": 0,
-          "last_character_index": 1309
+          "file_path": "data/raw/vllm-0.10.1/docs/serving/offline_inference.md",
+          "first_character_index": 799,
+          "last_character_index": 2470
         }
       ]
     },
@@ -1517,6 +1517,46 @@
       "question": "What minimum CUDA compiler version is required for building cutlass_scaled_mm kernels for Blackwell SM100 in vLLM?",
       "retrieved_sources": [
         {
+          "file_path": "data/raw/vllm-0.10.1/CMakeLists.txt",
+          "first_character_index": 17661,
+          "last_character_index": 19656
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/CMakeLists.txt",
+          "first_character_index": 27589,
+          "last_character_index": 29573
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/CMakeLists.txt",
+          "first_character_index": 25612,
+          "last_character_index": 27589
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/CMakeLists.txt",
+          "first_character_index": 15692,
+          "last_character_index": 17661
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/CMakeLists.txt",
+          "first_character_index": 13702,
+          "last_character_index": 15692
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/CMakeLists.txt",
+          "first_character_index": 23631,
+          "last_character_index": 25612
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/CMakeLists.txt",
+          "first_character_index": 21651,
+          "last_character_index": 23631
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/CMakeLists.txt",
+          "first_character_index": 19656,
+          "last_character_index": 21651
+        },
+        {
           "file_path": "data/raw/vllm-0.10.1/benchmarks/cutlass_benchmarks/w8a8_benchmarks.py",
           "first_character_index": 5383,
           "last_character_index": 6492
@@ -1525,46 +1565,6 @@
           "file_path": "data/raw/vllm-0.10.1/tests/kernels/moe/test_cutlass_grouped_gemm.py",
           "first_character_index": 0,
           "last_character_index": 1023
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/docs/contributing/incremental_build.md",
-          "first_character_index": 3030,
-          "last_character_index": 4937
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/gpu/cuda.inc.md",
-          "first_character_index": 0,
-          "last_character_index": 1025
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/benchmarks/cutlass_benchmarks/w8a8_benchmarks.py",
-          "first_character_index": 1224,
-          "last_character_index": 3157
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/benchmarks/kernels/deepgemm/benchmark_fp8_block_dense_gemm.py",
-          "first_character_index": 2458,
-          "last_character_index": 4455
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/vllm/model_executor/layers/quantization/fp8.py",
-          "first_character_index": 23410,
-          "last_character_index": 25381
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/gpu/cuda.inc.md",
-          "first_character_index": 10869,
-          "last_character_index": 12451
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/tests/kernels/quantization/test_cutlass_scaled_mm.py",
-          "first_character_index": 0,
-          "last_character_index": 1658
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/vllm/model_executor/layers/quantization/kernels/scaled_mm/__init__.py",
-          "first_character_index": 0,
-          "last_character_index": 1169
         }
       ]
     },
@@ -1598,14 +1598,14 @@
           "last_character_index": 5376
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/gpu.md",
-          "first_character_index": 0,
-          "last_character_index": 1828
-        },
-        {
           "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/python_env_setup.inc.md",
           "first_character_index": 0,
           "last_character_index": 413
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/gpu.md",
+          "first_character_index": 0,
+          "last_character_index": 1828
         },
         {
           "file_path": "data/raw/vllm-0.10.1/docs/deployment/frameworks/autogen.md",
@@ -1618,9 +1618,9 @@
           "last_character_index": 7667
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/gpu/xpu.inc.md",
+          "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/intel_gaudi.md",
           "first_character_index": 0,
-          "last_character_index": 1928
+          "last_character_index": 1492
         }
       ]
     },
@@ -1659,14 +1659,14 @@
           "last_character_index": 7386
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/docs/design/huggingface_integration.md",
-          "first_character_index": 0,
-          "last_character_index": 1820
-        },
-        {
           "file_path": "data/raw/vllm-0.10.1/docs/features/multimodal_inputs.md",
           "first_character_index": 15061,
           "last_character_index": 16981
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/docs/design/huggingface_integration.md",
+          "first_character_index": 0,
+          "last_character_index": 1820
         },
         {
           "file_path": "data/raw/vllm-0.10.1/docs/models/supported_models.md",
@@ -1715,14 +1715,14 @@
           "last_character_index": 85659
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/tests/kernels/test_flex_attention.py",
-          "first_character_index": 0,
-          "last_character_index": 820
-        },
-        {
           "file_path": "data/raw/vllm-0.10.1/docs/features/quantization/fp8.md",
           "first_character_index": 4565,
           "last_character_index": 5619
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/tests/kernels/test_flex_attention.py",
+          "first_character_index": 0,
+          "last_character_index": 820
         },
         {
           "file_path": "data/raw/vllm-0.10.1/docs/contributing/README.md",
@@ -2000,14 +2000,14 @@
           "last_character_index": 6837
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/gpu/xpu.inc.md",
-          "first_character_index": 0,
-          "last_character_index": 1928
-        },
-        {
           "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/README.md",
           "first_character_index": 0,
           "last_character_index": 1157
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/gpu/xpu.inc.md",
+          "first_character_index": 0,
+          "last_character_index": 1928
         },
         {
           "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/gpu/cuda.inc.md",
@@ -2066,9 +2066,9 @@
           "last_character_index": 1606
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/examples/offline_inference/qwen3_reranker.py",
-          "first_character_index": 2551,
-          "last_character_index": 3441
+          "file_path": "data/raw/vllm-0.10.1/docs/design/multiprocessing.md",
+          "first_character_index": 4584,
+          "last_character_index": 6569
         }
       ]
     },
@@ -2423,14 +2423,14 @@
           "last_character_index": 3057
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/README.md",
-          "first_character_index": 0,
-          "last_character_index": 1157
-        },
-        {
           "file_path": "data/raw/vllm-0.10.1/docs/features/quantization/inc.md",
           "first_character_index": 0,
           "last_character_index": 1315
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/README.md",
+          "first_character_index": 0,
+          "last_character_index": 1157
         },
         {
           "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/gpu/xpu.inc.md",
@@ -2570,9 +2570,9 @@
           "last_character_index": 16060
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/docs/features/spec_decode.md",
-          "first_character_index": 10670,
-          "last_character_index": 12613
+          "file_path": "data/raw/vllm-0.10.1/docs/contributing/incremental_build.md",
+          "first_character_index": 7404,
+          "last_character_index": 8352
         }
       ]
     },
@@ -2596,14 +2596,14 @@
           "last_character_index": 1789
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/gpu/cuda.inc.md",
-          "first_character_index": 2758,
-          "last_character_index": 3447
-        },
-        {
           "file_path": "data/raw/vllm-0.10.1/docs/usage/troubleshooting.md",
           "first_character_index": 0,
           "last_character_index": 1850
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/gpu/cuda.inc.md",
+          "first_character_index": 2758,
+          "last_character_index": 3447
         },
         {
           "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/gpu/cuda.inc.md",
@@ -2616,6 +2616,11 @@
           "last_character_index": 5447
         },
         {
+          "file_path": "data/raw/vllm-0.10.1/CMakeLists.txt",
+          "first_character_index": 0,
+          "last_character_index": 1930
+        },
+        {
           "file_path": "data/raw/vllm-0.10.1/docs/design/multiprocessing.md",
           "first_character_index": 1095,
           "last_character_index": 2604
@@ -2624,11 +2629,6 @@
           "file_path": "data/raw/vllm-0.10.1/.buildkite/nightly-benchmarks/README.md",
           "first_character_index": 8615,
           "last_character_index": 10291
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/docs/usage/troubleshooting.md",
-          "first_character_index": 11059,
-          "last_character_index": 12432
         }
       ]
     },
@@ -2835,14 +2835,14 @@
           "last_character_index": 11149
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/vllm/usage/usage_lib.py",
-          "first_character_index": 1460,
-          "last_character_index": 2402
-        },
-        {
           "file_path": "data/raw/vllm-0.10.1/docs/features/tool_calling.md",
           "first_character_index": 3183,
           "last_character_index": 4941
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/vllm/usage/usage_lib.py",
+          "first_character_index": 1460,
+          "last_character_index": 2402
         },
         {
           "file_path": "data/raw/vllm-0.10.1/docs/design/multiprocessing.md",
@@ -2906,9 +2906,9 @@
           "last_character_index": 3821
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/docs/contributing/model/registration.md",
+          "file_path": "data/raw/vllm-0.10.1/docs/usage/faq.md",
           "first_character_index": 0,
-          "last_character_index": 1655
+          "last_character_index": 1947
         }
       ]
     },
@@ -3334,6 +3334,11 @@
           "last_character_index": 1133
         },
         {
+          "file_path": "data/raw/vllm-0.10.1/benchmarks/sonnet.txt",
+          "first_character_index": 1971,
+          "last_character_index": 3963
+        },
+        {
           "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/cpu/apple.inc.md",
           "first_character_index": 0,
           "last_character_index": 1991
@@ -3344,19 +3349,14 @@
           "last_character_index": 834
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/gpu/cuda.inc.md",
-          "first_character_index": 0,
-          "last_character_index": 1025
-        },
-        {
           "file_path": "data/raw/vllm-0.10.1/examples/offline_inference/neuron_eagle.py",
           "first_character_index": 0,
           "last_character_index": 616
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/gpu.md",
+          "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/gpu/cuda.inc.md",
           "first_character_index": 0,
-          "last_character_index": 1828
+          "last_character_index": 1025
         }
       ]
     },
@@ -3533,9 +3533,34 @@
       "question": "What CUDA compiler version is required to build Machete kernels in vLLM?",
       "retrieved_sources": [
         {
+          "file_path": "data/raw/vllm-0.10.1/CMakeLists.txt",
+          "first_character_index": 27589,
+          "last_character_index": 29573
+        },
+        {
           "file_path": "data/raw/vllm-0.10.1/docs/contributing/incremental_build.md",
           "first_character_index": 3030,
           "last_character_index": 4937
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/CMakeLists.txt",
+          "first_character_index": 29573,
+          "last_character_index": 31572
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/CMakeLists.txt",
+          "first_character_index": 17661,
+          "last_character_index": 19656
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/CMakeLists.txt",
+          "first_character_index": 15692,
+          "last_character_index": 17661
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/CMakeLists.txt",
+          "first_character_index": 25612,
+          "last_character_index": 27589
         },
         {
           "file_path": "data/raw/vllm-0.10.1/docs/contributing/incremental_build.md",
@@ -3556,31 +3581,6 @@
           "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/gpu/cuda.inc.md",
           "first_character_index": 0,
           "last_character_index": 1025
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/gpu/cuda.inc.md",
-          "first_character_index": 10869,
-          "last_character_index": 12451
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/docs/contributing/incremental_build.md",
-          "first_character_index": 5469,
-          "last_character_index": 7404
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/tools/ep_kernels/README.md",
-          "first_character_index": 0,
-          "last_character_index": 1370
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/vllm/collect_env.py",
-          "first_character_index": 22328,
-          "last_character_index": 24109
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/setup.py",
-          "first_character_index": 6663,
-          "last_character_index": 8637
         }
       ]
     },
@@ -3802,9 +3802,9 @@
           "last_character_index": 1352
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/benchmarks/README.md",
-          "first_character_index": 5296,
-          "last_character_index": 7113
+          "file_path": "data/raw/vllm-0.10.1/benchmarks/sonnet.txt",
+          "first_character_index": 1971,
+          "last_character_index": 3963
         }
       ]
     },
@@ -4011,14 +4011,14 @@
           "last_character_index": 105048
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/docs/design/metrics.md",
-          "first_character_index": 24137,
-          "last_character_index": 25683
-        },
-        {
           "file_path": "data/raw/vllm-0.10.1/vllm/model_executor/layers/quantization/kernels/scaled_mm/__init__.py",
           "first_character_index": 1169,
           "last_character_index": 3146
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/docs/design/metrics.md",
+          "first_character_index": 24137,
+          "last_character_index": 25683
         },
         {
           "file_path": "data/raw/vllm-0.10.1/vllm/v1/worker/gpu_worker.py",
@@ -4082,9 +4082,9 @@
           "last_character_index": 5213
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/examples/offline_inference/disaggregated_prefill.py",
-          "first_character_index": 2194,
-          "last_character_index": 4137
+          "file_path": "data/raw/vllm-0.10.1/docs/design/p2p_nccl_connector.md",
+          "first_character_index": 0,
+          "last_character_index": 1776
         }
       ]
     },
@@ -4205,14 +4205,44 @@
       "question": "What CUDA architectures are supported for Marlin MOE kernels in vLLM?",
       "retrieved_sources": [
         {
+          "file_path": "data/raw/vllm-0.10.1/CMakeLists.txt",
+          "first_character_index": 34592,
+          "last_character_index": 36565
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/CMakeLists.txt",
+          "first_character_index": 13702,
+          "last_character_index": 15692
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/CMakeLists.txt",
+          "first_character_index": 32627,
+          "last_character_index": 34592
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/CMakeLists.txt",
+          "first_character_index": 3624,
+          "last_character_index": 5612
+        },
+        {
           "file_path": "data/raw/vllm-0.10.1/docs/models/supported_models.md",
           "first_character_index": 0,
           "last_character_index": 597
         },
         {
+          "file_path": "data/raw/vllm-0.10.1/CMakeLists.txt",
+          "first_character_index": 9757,
+          "last_character_index": 11723
+        },
+        {
           "file_path": "data/raw/vllm-0.10.1/vllm/model_executor/layers/quantization/utils/nvfp4_moe_support.py",
           "first_character_index": 0,
           "last_character_index": 1990
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/CMakeLists.txt",
+          "first_character_index": 25612,
+          "last_character_index": 27589
         },
         {
           "file_path": "data/raw/vllm-0.10.1/vllm/model_executor/layers/quantization/fp8.py",
@@ -4223,36 +4253,6 @@
           "file_path": "data/raw/vllm-0.10.1/docs/configuration/model_resolution.md",
           "first_character_index": 0,
           "last_character_index": 988
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/docs/usage/troubleshooting.md",
-          "first_character_index": 12432,
-          "last_character_index": 13685
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/vllm/model_executor/models/registry.py",
-          "first_character_index": 23318,
-          "last_character_index": 25282
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/vllm/model_executor/layers/quantization/awq_marlin.py",
-          "first_character_index": 5847,
-          "last_character_index": 7847
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/vllm/model_executor/model_loader/utils.py",
-          "first_character_index": 6955,
-          "last_character_index": 8871
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/vllm/model_executor/layers/quantization/qqq.py",
-          "first_character_index": 1032,
-          "last_character_index": 3026
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/docs/features/quantization/fp8.md",
-          "first_character_index": 0,
-          "last_character_index": 1725
         }
       ]
     },
@@ -4444,14 +4444,14 @@
           "last_character_index": 1935
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/docs/features/compatibility_matrix.md",
-          "first_character_index": 0,
-          "last_character_index": 364
-        },
-        {
           "file_path": "data/raw/vllm-0.10.1/docs/contributing/dockerfile/dockerfile.md",
           "first_character_index": 0,
           "last_character_index": 1791
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/docs/features/compatibility_matrix.md",
+          "first_character_index": 0,
+          "last_character_index": 364
         },
         {
           "file_path": "data/raw/vllm-0.10.1/benchmarks/disagg_benchmarks/visualize_benchmark_results.py",
@@ -4474,9 +4474,9 @@
           "last_character_index": 16280
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/docs/design/metrics.md",
-          "first_character_index": 24137,
-          "last_character_index": 25683
+          "file_path": "data/raw/vllm-0.10.1/docs/contributing/incremental_build.md",
+          "first_character_index": 3030,
+          "last_character_index": 4937
         }
       ]
     },
@@ -4490,14 +4490,14 @@
           "last_character_index": 1637
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/cpu.md",
-          "first_character_index": 0,
-          "last_character_index": 1761
-        },
-        {
           "file_path": "data/raw/vllm-0.10.1/vllm/engine/arg_utils.py",
           "first_character_index": 49891,
           "last_character_index": 51882
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/docs/getting_started/installation/cpu.md",
+          "first_character_index": 0,
+          "last_character_index": 1761
         },
         {
           "file_path": "data/raw/vllm-0.10.1/vllm/platforms/interface.py",
@@ -4525,14 +4525,14 @@
           "last_character_index": 597
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/vllm/model_executor/layers/quantization/kernels/mixed_precision/dynamic_4bit.py",
-          "first_character_index": 393,
-          "last_character_index": 2366
-        },
-        {
           "file_path": "data/raw/vllm-0.10.1/vllm/envs.py",
           "first_character_index": 18605,
           "last_character_index": 20596
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/vllm/model_executor/layers/quantization/kernels/mixed_precision/dynamic_4bit.py",
+          "first_character_index": 393,
+          "last_character_index": 2366
         }
       ]
     },
@@ -4729,14 +4729,14 @@
           "last_character_index": 665
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/vllm/lora/models.py",
-          "first_character_index": 1888,
-          "last_character_index": 2340
-        },
-        {
           "file_path": "data/raw/vllm-0.10.1/tests/lora/test_utils.py",
           "first_character_index": 665,
           "last_character_index": 2644
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/vllm/lora/models.py",
+          "first_character_index": 1888,
+          "last_character_index": 2340
         },
         {
           "file_path": "data/raw/vllm-0.10.1/vllm/v1/worker/lora_model_runner_mixin.py",
@@ -4754,9 +4754,9 @@
           "last_character_index": 4321
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/docs/features/lora.md",
-          "first_character_index": 2072,
-          "last_character_index": 4070
+          "file_path": "data/raw/vllm-0.10.1/vllm/lora/peft_helper.py",
+          "first_character_index": 528,
+          "last_character_index": 2510
         }
       ]
     },
@@ -4790,14 +4790,14 @@
           "last_character_index": 2243
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/benchmarks/auto_tune/README.md",
-          "first_character_index": 5941,
-          "last_character_index": 7430
-        },
-        {
           "file_path": "data/raw/vllm-0.10.1/tools/profiler/nsys_profile_tools/README.md",
           "first_character_index": 1586,
           "last_character_index": 3502
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/benchmarks/auto_tune/README.md",
+          "first_character_index": 5941,
+          "last_character_index": 7430
         },
         {
           "file_path": "data/raw/vllm-0.10.1/vllm/model_executor/layers/sampler.py",
@@ -4810,9 +4810,9 @@
           "last_character_index": 3569
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/benchmarks/auto_tune/README.md",
-          "first_character_index": 4439,
-          "last_character_index": 5941
+          "file_path": "data/raw/vllm-0.10.1/vllm/config/scheduler.py",
+          "first_character_index": 2799,
+          "last_character_index": 4770
         }
       ]
     },
@@ -4897,6 +4897,11 @@
           "last_character_index": 1079
         },
         {
+          "file_path": "data/raw/vllm-0.10.1/tests/system_messages/sonnet3.5_nov2024.txt",
+          "first_character_index": 5528,
+          "last_character_index": 6990
+        },
+        {
           "file_path": "data/raw/vllm-0.10.1/CODE_OF_CONDUCT.md",
           "first_character_index": 0,
           "last_character_index": 1529
@@ -4907,24 +4912,19 @@
           "last_character_index": 2119
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/tests/v1/tpu/test_basic.py",
-          "first_character_index": 3848,
-          "last_character_index": 5252
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/docs/models/supported_models.md",
-          "first_character_index": 53941,
-          "last_character_index": 54657
-        },
-        {
-          "file_path": "data/raw/vllm-0.10.1/tests/models/quantization/test_mxfp4.py",
+          "file_path": "data/raw/vllm-0.10.1/tests/system_messages/sonnet3.5_nov2024.txt",
           "first_character_index": 0,
-          "last_character_index": 1842
+          "last_character_index": 1837
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/docs/usage/troubleshooting.md",
-          "first_character_index": 15156,
-          "last_character_index": 16071
+          "file_path": "data/raw/vllm-0.10.1/tests/system_messages/sonnet3.5_nov2024.txt",
+          "first_character_index": 1837,
+          "last_character_index": 3713
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/tests/system_messages/sonnet3.5_nov2024.txt",
+          "first_character_index": 8859,
+          "last_character_index": 10735
         }
       ]
     },
@@ -5289,14 +5289,14 @@
           "last_character_index": 9569
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/docs/contributing/README.md",
-          "first_character_index": 0,
-          "last_character_index": 1871
-        },
-        {
           "file_path": "data/raw/vllm-0.10.1/docs/contributing/incremental_build.md",
           "first_character_index": 7404,
           "last_character_index": 8352
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/docs/contributing/README.md",
+          "first_character_index": 0,
+          "last_character_index": 1871
         },
         {
           "file_path": "data/raw/vllm-0.10.1/setup.py",
@@ -5355,14 +5355,14 @@
           "last_character_index": 5223
         },
         {
-          "file_path": "data/raw/vllm-0.10.1/examples/online_serving/openai_chat_completion_with_reasoning.py",
-          "first_character_index": 0,
-          "last_character_index": 1926
-        },
-        {
           "file_path": "data/raw/vllm-0.10.1/examples/online_serving/openai_chat_completion_tool_calls_with_reasoning.py",
           "first_character_index": 0,
           "last_character_index": 1888
+        },
+        {
+          "file_path": "data/raw/vllm-0.10.1/examples/online_serving/openai_chat_completion_with_reasoning.py",
+          "first_character_index": 0,
+          "last_character_index": 1926
         },
         {
           "file_path": "data/raw/vllm-0.10.1/examples/online_serving/openai_chat_completion_client.py",
