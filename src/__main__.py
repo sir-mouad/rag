@@ -193,9 +193,12 @@ def evaluate(student_search_results_path, dataset_path):
         print("Evaluation Results")
         print("=" * 40)
         print(f"Questions evaluated: {counted}")
+        final = {}
         for k in ks:
             recall = totals[k] / counted
             print(f"Recall@{k}: {recall:.3f} ({recall * 100:.1f}%)")
+            final[f"Recall@{k}"] = f"{recall:g}"
+        print(final)
     except (KeyError, TypeError):
         print("Invalid file format: missing fields in the files")
     except Exception as e:
