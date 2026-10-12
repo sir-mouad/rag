@@ -48,7 +48,7 @@ def search(query, k):
 
 
 def search_dataset(dataset_path, k, save_directory):
-    # try:
+    try:
         if not isinstance(k, int) or k <= 0:
             print("Invalid Argument: --k must be a positive integer")
             return
@@ -74,8 +74,8 @@ def search_dataset(dataset_path, k, save_directory):
         result = StudentSearchResults(search_results=search_results, k=k)
         output_path = dump_json(result, dataset_path, save_directory)
         print(f"Saved student_search_results to {output_path}")
-    # except Exception as e:
-    #     print(e)
+    except Exception as e:
+        print(e)
 
 
 def answer(query, k):
