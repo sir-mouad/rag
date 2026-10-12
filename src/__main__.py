@@ -1,13 +1,15 @@
 import fire
 from src.indexer import indexer
 from src.tokenizer import tokenizer, build_token
-from src.bm25 import build_bm25
+from src.retrieval import build_bm25, retrieve
 from src.load_dump import dump_chunks, dump_tokenze, load_chunks, load_tokenze, dump_json, read_part, load_json, load_dataset
 from tqdm import tqdm
 from src.models import MinimalSource, MinimalSearchResults, StudentSearchResults, MinimalAnswer, StudentSearchResultsAndAnswer
 from src.generator import load_model, build_prompt, get_answer_text
 import uuid
-from src.heplers import check_args, is_found
+from src.helpers import check_args, is_found
+from src.cache import get_index
+import shutil
 
 
 def index(max_chunk_size=2000):
@@ -23,6 +25,7 @@ def index(max_chunk_size=2000):
         tokenized = tokenizer(chunks)
         dump_chunks(chunks)
         dump_tokenze(tokenized)
+        shutil.rmtree("data/cache", ignore_errors=True)
         print(
             f"Ingestion complete! Indexed {len(chunks)} chunks under data/processed/")
     except Exception as e:
@@ -34,19 +37,12 @@ def search(query, k):
         query = str(query)
         if not check_args(query, k):
             return
-        chunks = load_chunks()
-        tokenized = load_tokenze()
-        bm25 = build_bm25(tokenized)
-        query_tok = build_token(query)
-        scores = bm25.get_scores(query_tok)
-        if not query_tok or scores.max() <= 0:
+        results = retrieve(query, k)
+        if not results:
             print("No relevant results found for this query.")
             return
-        top_k_indices = scores.argsort()[::-1][:k]
-        for i in top_k_indices:
-            chunk = chunks[i]
-            print(
-                f"{chunk['file_path']} [{chunk['first_character_index']}:{chunk['last_character_index']}]")
+        for chunk in results:
+            print(f"{chunk['file_path']} [{chunk['first_character_index']}:{chunk['last_character_index']}]")
     except Exception as e:
         print(e)
 
@@ -56,9 +52,7 @@ def search_dataset(dataset_path, k, save_directory):
         if not isinstance(k, int) or k <= 0:
             print("Invalid Argument: --k must be a positive integer")
             return
-        chunks = load_chunks()
-        tokenized = load_tokenze()
-        bm25 = build_bm25(tokenized)
+        chunks , bm25 = get_index()
         questions = load_dataset(dataset_path)
         search_results = []
         for ques_id, ques in tqdm(questions, desc="searching", unit="question"):
@@ -89,20 +83,14 @@ def answer(query, k):
         query = str(query)
         if not check_args(query, k):
             return
-        chunks = load_chunks()
-        tokenized = load_tokenze()
-        bm25 = build_bm25(tokenized)
-        query_tok = build_token(query)
-        scores = bm25.get_scores(query_tok)
-        if not query_tok or scores.max() <= 0:
+        results = retrieve(query, k)
+        if not results:
             print("No relevant results found for this query.")
             return
         llm_tokenizer, model = load_model()
-        top_k_indices = scores.argsort()[::-1][:k]
         sources = []
         texts = []
-        for i in top_k_indices:
-            chunk = chunks[i]
+        for chunk in results:
             sources.append(MinimalSource(file_path=chunk["file_path"],
                                          first_character_index=chunk["first_character_index"],
                                          last_character_index=chunk["last_character_index"]))
@@ -116,7 +104,6 @@ def answer(query, k):
             retrieved_sources=sources,
             answer=answer_text
         )
-
         print(result.model_dump_json(indent=2))
     except Exception as e:
         print(e)
