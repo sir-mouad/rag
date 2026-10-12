@@ -15,16 +15,17 @@ def hybrid_retrieval(query):
     chunks, bm25 = get_index()
     query_tok = build_token(query)
     bm25_scores = bm25.get_scores(query_tok)
+    print(len(bm25_scores))
+    print("="*40)
 
     model = build_MiniLM()
     texts = []
     for c in chunks:
-        texts.append(read_part(c["file_path"],c["first_character_index"], c["last_character_index"]))
+        texts.append(c["text"])
+    print(len(texts))
     chunk_embeddings = model.encode(texts)
     query_embedding = model.encode([query])
     Minilm_scores = cosine_similarity(query_embedding, chunk_embeddings)[0]
-    print(bm25_scores)
-    print("="*40)
     print(Minilm_scores)
 
 def retrieve(query, k):
@@ -44,5 +45,5 @@ def retrieve(query, k):
 
 
 
-
-hybrid_retrieval("what is an llm")
+if __name__ == "__main__":
+    hybrid_retrieval("what is an llm")
