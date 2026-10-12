@@ -1,7 +1,7 @@
 import fire
 from src.indexer import indexer
 from src.tokenizer import tokenizer, build_token
-from src.retrieval import build_bm25, retrieve
+from src.retrieval import retrieve
 from src.load_dump import dump_chunks, dump_tokenze, load_chunks, load_tokenze, dump_json, read_part, load_json, load_dataset
 from tqdm import tqdm
 from src.models import MinimalSource, MinimalSearchResults, StudentSearchResults, MinimalAnswer, StudentSearchResultsAndAnswer

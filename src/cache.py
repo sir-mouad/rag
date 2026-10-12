@@ -1,7 +1,7 @@
 import os
 import pickle
 from src.load_dump import load_chunks, load_tokenze
-from src.bm25 import build_bm25
+from src.retrieval import build_bm25
 
 CACHE_DIR = "data/cache"
 INDEX_CACHE = "data/cache/index.pkl"
