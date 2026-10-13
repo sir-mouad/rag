@@ -10,9 +10,10 @@ import uuid
 from src.helpers import check_args, is_found
 from src.cache import get_index
 import shutil
+from src.embedding import build_embeddings, dump_embeddings
 
 
-def index(max_chunk_size=2000):
+def index(max_chunk_size=2000, semantic=False):
     try:
         if not isinstance(max_chunk_size, int) or not 1 <= max_chunk_size <= 2000:
             print(
@@ -22,6 +23,8 @@ def index(max_chunk_size=2000):
         if not chunks:
             print("Error: no chunks were created, nothing to index.")
             return
+        if semantic:
+            dump_embeddings(build_embeddings([c.text for c in chunks]))
         tokenized = tokenizer(chunks)
         dump_chunks(chunks)
         dump_tokenze(tokenized)

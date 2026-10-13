@@ -5,6 +5,7 @@ import ast
 from tqdm import tqdm
 
 
+
 def chunk_python(path, content, max_chunk_size):
     if len(content) <= max_chunk_size:
         return [Chunk(

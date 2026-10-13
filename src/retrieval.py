@@ -1,49 +1,28 @@
-from rank_bm25 import BM25Okapi
-from src.cache import get_index
-from src.tokenizer import build_token
-from sentence_transformers import SentenceTransformer
-from sklearn.metrics.pairwise import cosine_similarity
-from src.load_dump import read_part
+from src.cache import get_index, load_queries, dump_queries
+from src.embedding import load_embeddings
+from src.ranking import top_chunks, MODES
 
-def build_bm25(tokenized):
-    return BM25Okapi(tokenized)
 
-def build_MiniLM():
-    return SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+def get_embeddings(chunks, mode):
+    if mode not in MODES:
+        raise ValueError("mode must be bm25, semantic or hybrid")
+    if mode == "bm25":
+        return None
+    embeddings = load_embeddings(len(chunks))
+    if embeddings is None:
+        raise ValueError("Embeddings not found: "
+                         "run index with --semantic True")
+    return embeddings
 
-def hybrid_retrieval(query):
+
+def retrieve(query, k, mode="bm25"):
+    key = f"{mode}|{k}|{query.strip()}"
+    entries = load_queries()
+    if key in entries:
+        return entries[key]
     chunks, bm25 = get_index()
-    query_tok = build_token(query)
-    bm25_scores = bm25.get_scores(query_tok)
-    print(len(bm25_scores))
-    print("="*40)
-
-    model = build_MiniLM()
-    texts = []
-    for c in chunks:
-        texts.append(c["text"])
-    print(len(texts))
-    chunk_embeddings = model.encode(texts)
-    query_embedding = model.encode([query])
-    Minilm_scores = cosine_similarity(query_embedding, chunk_embeddings)[0]
-    print(Minilm_scores)
-
-def retrieve(query, k):
-    if not query_tok:
-        return []
-    chunks, bm25 = get_index()
-    query_tok = build_token(query)
-    scores = bm25.get_scores(query_tok)
-    if scores.max() <= 0:
-        return []
-    top_k_indices = scores.argsort()[::-1][:k]
-    return [chunks[i] for i in top_k_indices]
-
-
-
-
-
-
-
-if __name__ == "__main__":
-    hybrid_retrieval("what is an llm")
+    embeddings = get_embeddings(chunks, mode)
+    results = top_chunks(query, k, chunks, bm25, embeddings, mode)
+    entries[key] = results
+    dump_queries(entries)
+    return results
