@@ -1,16 +1,18 @@
 import fire
-from src.indexer import indexer
-from src.tokenizer import tokenizer, build_token
-from src.retrieval import retrieve
-from src.load_dump import dump_chunks, dump_tokenze, load_chunks, load_tokenze, dump_json, read_part, load_json, load_dataset
+import os
+import shutil
+import uuid
 from tqdm import tqdm
+from src.indexer import indexer
+from src.tokenizer import tokenizer
+from src.retrieval import retrieve, get_embeddings
+from src.ranking import top_chunks
+from src.cache import get_index, load_queries, dump_queries
+from src.embedding import build_embeddings, dump_embeddings, EMBEDDINGS_PATH
+from src.load_dump import dump_chunks, dump_tokenze, dump_json, read_part, load_dataset, load_json, load_search_results
 from src.models import MinimalSource, MinimalSearchResults, StudentSearchResults, MinimalAnswer, StudentSearchResultsAndAnswer
 from src.generator import load_model, build_prompt, get_answer_text
-import uuid
 from src.helpers import check_args, is_found
-from src.cache import get_index
-import shutil
-from src.embedding import build_embeddings, dump_embeddings
 
 
 def index(max_chunk_size=2000, semantic=False):
@@ -23,48 +25,49 @@ def index(max_chunk_size=2000, semantic=False):
         if not chunks:
             print("Error: no chunks were created, nothing to index.")
             return
-        if semantic:
-            dump_embeddings(build_embeddings([c.text for c in chunks]))
         tokenized = tokenizer(chunks)
+        if os.path.exists(EMBEDDINGS_PATH):
+            os.remove(EMBEDDINGS_PATH)
         dump_chunks(chunks)
         dump_tokenze(tokenized)
         shutil.rmtree("data/cache", ignore_errors=True)
+        if semantic:
+            print(False)
+            dump_embeddings(build_embeddings([c.text for c in chunks]))
         print(
             f"Ingestion complete! Indexed {len(chunks)} chunks under data/processed/")
     except Exception as e:
         print(e)
 
 
-def search(query, k):
+def search(query, k, mode="bm25"):
     try:
         query = str(query)
         if not check_args(query, k):
             return
-        results = retrieve(query, k)
+        results = retrieve(query, k, mode)
         if not results:
             print("No relevant results found for this query.")
             return
         for chunk in results:
-            print(f"{chunk['file_path']} [{chunk['first_character_index']}:{chunk['last_character_index']}]")
+            print(
+                f"{chunk['file_path']} [{chunk['first_character_index']}:{chunk['last_character_index']}]")
     except Exception as e:
         print(e)
 
 
-def search_dataset(dataset_path, k, save_directory):
+def search_dataset(dataset_path, k, save_directory, mode="bm25"):
     try:
         if not isinstance(k, int) or k <= 0:
             print("Invalid Argument: --k must be a positive integer")
             return
-        chunks , bm25 = get_index()
+        chunks, bm25 = get_index()
+        embeddings = get_embeddings(chunks, mode)
         questions = load_dataset(dataset_path)
         search_results = []
         for ques_id, ques in tqdm(questions, desc="searching", unit="question"):
-            ques_tok = build_token(ques)
-            scores = bm25.get_scores(ques_tok)
-            top_k_indices = scores.argsort()[::-1][:k]
             sources = []
-            for i in top_k_indices:
-                chunk = chunks[i]
+            for chunk in top_chunks(ques, k, chunks, bm25, embeddings, mode):
                 sources.append(MinimalSource(file_path=chunk["file_path"],
                                              first_character_index=chunk["first_character_index"],
                                              last_character_index=chunk["last_character_index"]))
@@ -81,12 +84,17 @@ def search_dataset(dataset_path, k, save_directory):
         print(e)
 
 
-def answer(query, k):
+def answer(query, k, mode="bm25"):
     try:
         query = str(query)
         if not check_args(query, k):
             return
-        results = retrieve(query, k)
+        key = f"answer|{mode}|{k}|{query.strip()}"
+        entries = load_queries()
+        if key in entries:
+            print(MinimalAnswer(**entries[key]).model_dump_json(indent=2))
+            return
+        results = retrieve(query, k, mode)
         if not results:
             print("No relevant results found for this query.")
             return
@@ -107,6 +115,9 @@ def answer(query, k):
             retrieved_sources=sources,
             answer=answer_text
         )
+        entries = load_queries()
+        entries[key] = result.model_dump()
+        dump_queries(entries)
         print(result.model_dump_json(indent=2))
     except Exception as e:
         print(e)
@@ -114,7 +125,7 @@ def answer(query, k):
 
 def answer_dataset(student_search_results_path, save_directory):
     try:
-        search_results = load_json(student_search_results_path)
+        search_results = load_search_results(student_search_results_path)
         k = search_results["k"]
         llm_tokenizer, model = load_model()
         results = []

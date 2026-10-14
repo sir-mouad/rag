@@ -15,6 +15,7 @@ def get_iou(start1, end1, start2, end2):
         return 0
     return overlap / union
 
+
 def is_found(correct, retrieved):
     if correct["file_path"] != retrieved["file_path"]:
         return False
@@ -23,5 +24,3 @@ def is_found(correct, retrieved):
                   retrieved["first_character_index"],
                   retrieved["last_character_index"])
     return iou >= 0.05
-
-
