@@ -1,5 +1,4 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
-import re
 
 MODEL_NAME = "Qwen/Qwen3-0.6B"
 
@@ -13,11 +12,8 @@ def load_model():
 
 def build_prompt(query, content):
     return (
-        # "Answer the question using only the following context. "
-        # # "If the answer is not in the context, say you don't know.\n\n"
-        "Answer the question using ONLY information explicitly stated in the context. "
-        # "If the context does not explicitly contain the answer, respond exactly with "
-        # "\"I don't know.\" Do not infer, guess, or use general knowledge.\n\n"
+        "Answer the question using ONLY information "
+        "explicitly stated in the context. "
         f"Context:\n{content}\n\n"
         f"Question: {query}"
     )

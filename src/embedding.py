@@ -38,3 +38,20 @@ def semantic_scores(query, embeddings):
     query_vector = build_MiniLM().encode([query],
                                          normalize_embeddings=True)[0]
     return embeddings @ query_vector
+
+
+def update_embeddings(old_chunks, kept, new_chunks, chunks):
+    old_emb = None
+    if old_chunks:
+        old_emb = load_embeddings(len(old_chunks))
+    if old_emb is None:
+        texts = []
+        for c in chunks:
+            texts.append(c.text)
+        return build_embeddings(texts)
+    if not new_chunks:
+        return old_emb[kept]
+    texts = []
+    for c in new_chunks:
+        texts.append(c.text)
+    return np.vstack([old_emb[kept], build_embeddings(texts)])

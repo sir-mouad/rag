@@ -57,7 +57,8 @@ def chunk_python(path, content, max_chunk_size):
         pos = start
         current_start = start
         for line in section.splitlines(keepends=True):
-            if pos + len(line) - current_start > max_chunk_size and pos != current_start:
+            if pos + len(line) - current_start > max_chunk_size and \
+                    pos != current_start:
                 section = content[current_start:pos]
                 if section.strip():
                     chunks.append(Chunk(file_path=path,
@@ -126,9 +127,12 @@ def chunk_markdown(path, content, max_chunk_size):
         pos = start
         current_start = start
         for line in split_long_lines(section, max_chunk_size):
-            if pos + len(line) - current_start > max_chunk_size and pos != current_start:
-                chunks.append(Chunk(file_path=path, first_character_index=current_start, last_character_index=pos,
-                              text=content[current_start:pos]))
+            if pos + len(line) - current_start > max_chunk_size and \
+                    pos != current_start:
+                chunks.append(Chunk(file_path=path,
+                                    first_character_index=current_start,
+                                    last_character_index=pos,
+                                    text=content[current_start:pos]))
                 current_start = pos
             pos += len(line)
         chunks.append(Chunk(file_path=path,
@@ -148,7 +152,8 @@ def load_and_chunk_file(path, max_chunk_size, cwd):
     if not content.strip():
         return []
     if path.suffix == ".py":
-        return (chunk_python(str(path.relative_to(cwd)), content, max_chunk_size))
+        return (chunk_python(str(path.relative_to(cwd)),
+                             content, max_chunk_size))
     elif path.suffix == ".md" or path.suffix == ".txt":
         return (chunk_markdown(str(path.relative_to(cwd)),
                                content, max_chunk_size))

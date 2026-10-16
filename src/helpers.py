@@ -1,8 +1,8 @@
-import numpy as np
 from src.load_dump import load_history, load_chunks, load_tokenze
 from src.indexer import indexer
 from src.tokenizer import tokenizer
 from src.models import Chunk
+
 
 def check_args(query, k):
     if not isinstance(k, int) or k <= 0:
@@ -70,20 +70,3 @@ def merge_index(files, old, max_chunk_size):
     chunks.extend(new_chunks)
     tokenized.extend(new_tokenized)
     return chunks, tokenized, new_chunks, kept, changed
-
-
-def update_embeddings(old_chunks, kept, new_chunks, chunks):
-    old_emb = None
-    if old_chunks:
-        old_emb = load_embeddings(len(old_chunks))
-    if old_emb is None:
-        texts = []
-        for c in chunks:
-            texts.append(c.text)
-        return build_embeddings(texts)
-    if not new_chunks:
-        return old_emb[kept]
-    texts = []
-    for c in new_chunks:
-        texts.append(c.text)
-    return np.vstack([old_emb[kept], build_embeddings(texts)])

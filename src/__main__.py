@@ -1,26 +1,27 @@
+from src.helpers import check_args, is_found, merge_index, load_old_index
+from src.generator import load_model, build_prompt, get_answer_text
+from src.models import MinimalSource, MinimalSearchResults, \
+    StudentSearchResults, MinimalAnswer, StudentSearchResultsAndAnswer
 import fire
 import os
 import shutil
 import uuid
-import numpy as np
 from tqdm import tqdm
 from src.indexer import scan_files
-from src.tokenizer import tokenizer
 from src.retrieval import retrieve, get_embeddings
 from src.ranking import top_chunks
 from src.cache import get_index, load_queries, dump_queries
-from src.embedding import build_embeddings, dump_embeddings, load_embeddings, EMBEDDINGS_PATH
-from src.load_dump import dump_chunks, dump_tokenze, dump_history, load_chunks, load_tokenze, dump_json, read_part, load_dataset, load_json, load_search_results
-from src.models import Chunk, MinimalSource, MinimalSearchResults, StudentSearchResults, MinimalAnswer, StudentSearchResultsAndAnswer
-from src.generator import load_model, build_prompt, get_answer_text
-from src.helpers import check_args, is_found, merge_index, load_old_index, update_embeddings
+from src.embedding import dump_embeddings, EMBEDDINGS_PATH, update_embeddings
+from src.load_dump import dump_chunks, dump_tokenze, dump_history, dump_json, \
+    read_part, load_dataset, load_json, load_search_results
 
 
 def index(max_chunk_size=2000, semantic=False):
     # try:
     if not isinstance(max_chunk_size, int) or not 1 <= max_chunk_size <= 2000:
         print(
-            "Invalid Argument: --max_chunk_size must be an integer between 1 and 2000")
+            "Invalid Argument: --max_chunk_size must be an "
+            "integer between 1 and 2000")
         return
     files = scan_files()
     if not files:
@@ -44,7 +45,8 @@ def index(max_chunk_size=2000, semantic=False):
     if embeddings is not None:
         dump_embeddings(embeddings)
     print(
-        f"Ingestion complete! Indexed {len(chunks)} chunks under data/processed/ "
+        f"Ingestion complete! Indexed {len(chunks)} chunks "
+        "under data/processed/ "
         f"({len(changed)} files re-indexed)")
     # except Exception as e:
     #     print(e)
@@ -61,7 +63,8 @@ def search(query, k, mode="bm25"):
             return
         for chunk in results:
             print(
-                f"{chunk['file_path']} [{chunk['first_character_index']}:{chunk['last_character_index']}]")
+                f"{chunk['file_path']} [{chunk['first_character_index']}:"
+                f"{chunk['last_character_index']}]")
     except Exception as e:
         print(e)
 
@@ -75,12 +78,15 @@ def search_dataset(dataset_path, k, save_directory, mode="bm25"):
         embeddings = get_embeddings(chunks, mode)
         questions = load_dataset(dataset_path)
         search_results = []
-        for ques_id, ques in tqdm(questions, desc="searching", unit="question"):
+        for ques_id, ques in tqdm(questions, desc="searching",
+                                  unit="question"):
             sources = []
             for chunk in top_chunks(ques, k, chunks, bm25, embeddings, mode):
                 sources.append(MinimalSource(file_path=chunk["file_path"],
-                                             first_character_index=chunk["first_character_index"],
-                                             last_character_index=chunk["last_character_index"]))
+                                             first_character_index=chunk[
+                    "first_character_index"],
+                    last_character_index=chunk[
+                    "last_character_index"]))
             search_results.append(MinimalSearchResults(
                 question_id=ques_id,
                 question=ques,
@@ -113,8 +119,10 @@ def answer(query, k, mode="bm25"):
         texts = []
         for chunk in results:
             sources.append(MinimalSource(file_path=chunk["file_path"],
-                                         first_character_index=chunk["first_character_index"],
-                                         last_character_index=chunk["last_character_index"]))
+                                         first_character_index=chunk[
+                "first_character_index"],
+                last_character_index=chunk[
+                "last_character_index"]))
             texts.append(chunk["text"])
         content = "\n\n".join(texts)
         prompt = build_prompt(query, content)
@@ -139,7 +147,8 @@ def answer_dataset(student_search_results_path, save_directory):
         k = search_results["k"]
         llm_tokenizer, model = load_model()
         results = []
-        for res in tqdm(search_results["search_results"], desc="Answering", unit="question"):
+        for res in tqdm(search_results["search_results"], desc="Answering",
+                        unit="question"):
             ques_id = res["question_id"]
             ques = res["question"]
             sources = res["retrieved_sources"]
@@ -147,7 +156,8 @@ def answer_dataset(student_search_results_path, save_directory):
                 texts = []
                 for s in sources:
                     texts.append(read_part(
-                        s["file_path"], s["first_character_index"], s["last_character_index"]))
+                        s["file_path"], s["first_character_index"],
+                        s["last_character_index"]))
                 if not texts:
                     answer_text = "I don't know."
                 else:
