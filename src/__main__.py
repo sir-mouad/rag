@@ -2,42 +2,52 @@ import fire
 import os
 import shutil
 import uuid
+import numpy as np
 from tqdm import tqdm
-from src.indexer import indexer
+from src.indexer import scan_files
 from src.tokenizer import tokenizer
 from src.retrieval import retrieve, get_embeddings
 from src.ranking import top_chunks
 from src.cache import get_index, load_queries, dump_queries
-from src.embedding import build_embeddings, dump_embeddings, EMBEDDINGS_PATH
-from src.load_dump import dump_chunks, dump_tokenze, dump_json, read_part, load_dataset, load_json, load_search_results
-from src.models import MinimalSource, MinimalSearchResults, StudentSearchResults, MinimalAnswer, StudentSearchResultsAndAnswer
+from src.embedding import build_embeddings, dump_embeddings, load_embeddings, EMBEDDINGS_PATH
+from src.load_dump import dump_chunks, dump_tokenze, dump_history, load_chunks, load_tokenze, dump_json, read_part, load_dataset, load_json, load_search_results
+from src.models import Chunk, MinimalSource, MinimalSearchResults, StudentSearchResults, MinimalAnswer, StudentSearchResultsAndAnswer
 from src.generator import load_model, build_prompt, get_answer_text
-from src.helpers import check_args, is_found
+from src.helpers import check_args, is_found, merge_index, load_old_index, update_embeddings
 
 
 def index(max_chunk_size=2000, semantic=False):
-    try:
-        if not isinstance(max_chunk_size, int) or not 1 <= max_chunk_size <= 2000:
-            print(
-                "Invalid Argument: --max_chunk_size must be an integer between 1 and 2000")
-            return
-        chunks = indexer(max_chunk_size)
-        if not chunks:
-            print("Error: no chunks were created, nothing to index.")
-            return
-        tokenized = tokenizer(chunks)
-        if os.path.exists(EMBEDDINGS_PATH):
-            os.remove(EMBEDDINGS_PATH)
-        dump_chunks(chunks)
-        dump_tokenze(tokenized)
-        shutil.rmtree("data/cache", ignore_errors=True)
-        if semantic:
-            print(False)
-            dump_embeddings(build_embeddings([c.text for c in chunks]))
+    # try:
+    if not isinstance(max_chunk_size, int) or not 1 <= max_chunk_size <= 2000:
         print(
-            f"Ingestion complete! Indexed {len(chunks)} chunks under data/processed/")
-    except Exception as e:
-        print(e)
+            "Invalid Argument: --max_chunk_size must be an integer between 1 and 2000")
+        return
+    files = scan_files()
+    if not files:
+        print("Error: no files found, nothing to index.")
+        return
+    old = load_old_index(max_chunk_size)
+    chunks, tokenized, new_chunks, kept, changed = merge_index(
+        files, old, max_chunk_size)
+    if not chunks:
+        print("Error: no chunks were created, nothing to index.")
+        return
+    embeddings = None
+    if semantic:
+        embeddings = update_embeddings(old[1], kept, new_chunks, chunks)
+    if os.path.exists(EMBEDDINGS_PATH):
+        os.remove(EMBEDDINGS_PATH)
+    dump_chunks(chunks)
+    dump_tokenze(tokenized)
+    dump_history(files, max_chunk_size)
+    shutil.rmtree("data/cache", ignore_errors=True)
+    if embeddings is not None:
+        dump_embeddings(embeddings)
+    print(
+        f"Ingestion complete! Indexed {len(chunks)} chunks under data/processed/ "
+        f"({len(changed)} files re-indexed)")
+    # except Exception as e:
+    #     print(e)
 
 
 def search(query, k, mode="bm25"):

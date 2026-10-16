@@ -72,3 +72,20 @@ def read_part(path, first_character_index, last_character_index):
     with open(path, "r", encoding="utf-8") as f:
         content = f.read()
     return content[first_character_index:last_character_index]
+
+
+def dump_history(files, max_chunk_size):
+    os.makedirs("data/processed", exist_ok=True)
+    with open("data/processed/history.json", "w", encoding="utf-8") as f:
+        json.dump({"max_chunk_size": max_chunk_size, "files": files}, f)
+
+
+def load_history(max_chunk_size):
+    try:
+        with open("data/processed/history.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+        if data["max_chunk_size"] == max_chunk_size:
+            return data["files"]
+    except Exception:
+        pass
+    return {}

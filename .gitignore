@@ -1,0 +1,7 @@
+data/processed/
+data/cache/
+data/output/
+__pycache__/
+*.pyc
+.mypy_cache/
+.venv/

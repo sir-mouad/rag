@@ -75,6 +75,14 @@ def chunk_python(path, content, max_chunk_size):
     return chunks
 
 
+def split_long_lines(text, max_chunk_size):
+    pieces = []
+    for line in text.splitlines(keepends=True):
+        for i in range(0, len(line), max_chunk_size):
+            pieces.append(line[i:i + max_chunk_size])
+    return pieces
+
+
 def chunk_markdown(path, content, max_chunk_size):
     if len(content) <= max_chunk_size:
         return [Chunk(
@@ -117,7 +125,7 @@ def chunk_markdown(path, content, max_chunk_size):
             continue
         pos = start
         current_start = start
-        for line in section.splitlines(keepends=True):
+        for line in split_long_lines(section, max_chunk_size):
             if pos + len(line) - current_start > max_chunk_size and pos != current_start:
                 chunks.append(Chunk(file_path=path, first_character_index=current_start, last_character_index=pos,
                               text=content[current_start:pos]))
@@ -146,14 +154,29 @@ def load_and_chunk_file(path, max_chunk_size, cwd):
                                content, max_chunk_size))
 
 
-def indexer(max_chunk_size):
+def scan_files():
+    cwd = Path.cwd()
+    raw = cwd / "data" / "raw" / "vllm-0.10.1"
+    if not raw.is_dir():
+        print(f"Error: directory not found: {raw}")
+        return {}
+    files = {}
+    for f in raw.rglob("*"):
+        if f.suffix in (".py", ".md", ".txt"):
+            info = f.stat()
+            files[str(f.relative_to(cwd))] = [info.st_mtime_ns, info.st_size]
+    return files
+
+
+def indexer(max_chunk_size, only=None):
 
     cwd = Path.cwd()
     raw = cwd / "data" / "raw" / "vllm-0.10.1"
     if not raw.is_dir():
         print(f"Error: directory not found: {raw}")
         return []
-    paths = [f for f in raw.rglob("*") if f.suffix in (".py", ".md", ".txt")]
+    paths = [f for f in raw.rglob("*") if f.suffix in (".py", ".md", ".txt")
+             and (only is None or str(f.relative_to(cwd)) in only)]
     chunks = []
     for path in tqdm(list(paths), desc="Chunking", unit=" file"):
         chunks.extend(load_and_chunk_file(
