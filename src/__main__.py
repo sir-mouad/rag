@@ -17,39 +17,39 @@ from src.load_dump import dump_chunks, dump_tokenze, dump_history, dump_json, \
 
 
 def index(max_chunk_size=2000, semantic=False):
-    # try:
-    if not isinstance(max_chunk_size, int) or not 1 <= max_chunk_size <= 2000:
+    try:
+        if not isinstance(max_chunk_size, int) or not 1 <= max_chunk_size <= 2000:
+            print(
+                "Invalid Argument: --max_chunk_size must be an "
+                "integer between 1 and 2000")
+            return
+        files = scan_files()
+        if not files:
+            print("Error: no files found, nothing to index.")
+            return
+        old = load_old_index(max_chunk_size)
+        chunks, tokenized, new_chunks, kept, changed = merge_index(
+            files, old, max_chunk_size)
+        if not chunks:
+            print("Error: no chunks were created, nothing to index.")
+            return
+        embeddings = None
+        if semantic:
+            embeddings = update_embeddings(old[1], kept, new_chunks, chunks)
+        if os.path.exists(EMBEDDINGS_PATH):
+            os.remove(EMBEDDINGS_PATH)
+        dump_chunks(chunks)
+        dump_tokenze(tokenized)
+        dump_history(files, max_chunk_size)
+        shutil.rmtree("data/cache", ignore_errors=True)
+        if embeddings is not None:
+            dump_embeddings(embeddings)
         print(
-            "Invalid Argument: --max_chunk_size must be an "
-            "integer between 1 and 2000")
-        return
-    files = scan_files()
-    if not files:
-        print("Error: no files found, nothing to index.")
-        return
-    old = load_old_index(max_chunk_size)
-    chunks, tokenized, new_chunks, kept, changed = merge_index(
-        files, old, max_chunk_size)
-    if not chunks:
-        print("Error: no chunks were created, nothing to index.")
-        return
-    embeddings = None
-    if semantic:
-        embeddings = update_embeddings(old[1], kept, new_chunks, chunks)
-    if os.path.exists(EMBEDDINGS_PATH):
-        os.remove(EMBEDDINGS_PATH)
-    dump_chunks(chunks)
-    dump_tokenze(tokenized)
-    dump_history(files, max_chunk_size)
-    shutil.rmtree("data/cache", ignore_errors=True)
-    if embeddings is not None:
-        dump_embeddings(embeddings)
-    print(
-        f"Ingestion complete! Indexed {len(chunks)} chunks "
-        "under data/processed/ "
-        f"({len(changed)} files re-indexed)")
-    # except Exception as e:
-    #     print(e)
+            f"Ingestion complete! Indexed {len(chunks)} chunks "
+            "under data/processed/ "
+            f"({len(changed)} files re-indexed)")
+    except Exception as e:
+        print(e)
 
 
 def search(query, k, mode="bm25"):
