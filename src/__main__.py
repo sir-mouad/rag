@@ -18,7 +18,8 @@ from src.load_dump import dump_chunks, dump_tokenze, dump_history, dump_json, \
 
 def index(max_chunk_size=2000, semantic=False):
     try:
-        if not isinstance(max_chunk_size, int) or not 1 <= max_chunk_size <= 2000:
+        if not isinstance(max_chunk_size, int) or \
+                not 1 <= max_chunk_size <= 2000:
             print(
                 "Invalid Argument: --max_chunk_size must be an "
                 "integer between 1 and 2000")
@@ -70,7 +71,7 @@ def search(query, k, mode="bm25"):
 
 
 def search_dataset(dataset_path, k, save_directory, mode="bm25"):
-    try:
+    # try:
         if not isinstance(k, int) or k <= 0:
             print("Invalid Argument: --k must be a positive integer")
             return
@@ -96,8 +97,8 @@ def search_dataset(dataset_path, k, save_directory, mode="bm25"):
         result = StudentSearchResults(search_results=search_results, k=k)
         output_path = dump_json(result, dataset_path, save_directory)
         print(f"Saved student_search_results to {output_path}")
-    except Exception as e:
-        print(e)
+    # except Exception as e:
+    #     print(e)
 
 
 def answer(query, k, mode="bm25"):
@@ -227,4 +228,11 @@ def evaluate(student_search_results_path, dataset_path):
 
 
 if __name__ == "__main__":
-    fire.Fire()
+    fire.Fire({
+        "index": index,
+        "search": search,
+        "search_dataset": search_dataset,
+        "answer": answer,
+        "answer_dataset": answer_dataset,
+        "evaluate": evaluate
+    })

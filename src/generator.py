@@ -3,10 +3,10 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 MODEL_NAME = "Qwen/Qwen3-0.6B"
 
 
-def load_model():
-    llm_tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+def load_model(model_name=MODEL_NAME):
+    llm_tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(
-        MODEL_NAME, torch_dtype="auto")
+        model_name, torch_dtype="auto")
     return llm_tokenizer, model
 
 
@@ -33,6 +33,4 @@ def get_answer_text(prompt, llm_tokenizer, model):
     answer_text = llm_tokenizer.decode(
         output[0][inputs["input_ids"].shape[-1]:], skip_special_tokens=True
     )
-    # answer_text = re.sub(r"<think>.*?</think>\s*", "",
-    #                      answer_text, flags=re.DOTALL).strip()
     return answer_text
