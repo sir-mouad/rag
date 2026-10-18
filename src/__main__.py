@@ -1,11 +1,11 @@
 from src.helpers import check_args, is_found, merge_index, load_old_index
 from src.generator import load_model, build_prompt, get_answer_text
 from src.models import MinimalSource, MinimalSearchResults, \
-    StudentSearchResults, MinimalAnswer, StudentSearchResultsAndAnswer
+    StudentSearchResults, MinimalAnswer, StudentSearchResultsAndAnswer, \
+    AnsweredQuestion, UnansweredQuestion
 import fire
 import os
 import shutil
-import uuid
 from tqdm import tqdm
 from src.indexer import scan_files
 from src.retrieval import retrieve, get_embeddings
@@ -13,7 +13,8 @@ from src.ranking import top_chunks
 from src.cache import get_index, load_queries, dump_queries
 from src.embedding import dump_embeddings, EMBEDDINGS_PATH, update_embeddings
 from src.load_dump import dump_chunks, dump_tokenze, dump_history, dump_json, \
-    read_part, load_dataset, load_json, load_search_results
+    read_part, load_dataset, load_rag_dataset, load_json, \
+    load_search_results
 
 
 def index(max_chunk_size=2000, semantic=False):
@@ -106,6 +107,7 @@ def answer(query, k, mode="bm25"):
         query = str(query)
         if not check_args(query, k):
             return
+        question = UnansweredQuestion(question=query)
         key = f"answer|{mode}|{k}|{query.strip()}"
         entries = load_queries()
         if key in entries:
@@ -129,8 +131,8 @@ def answer(query, k, mode="bm25"):
         prompt = build_prompt(query, content)
         answer_text = get_answer_text(prompt, llm_tokenizer, model)
         result = MinimalAnswer(
-            question_id=str(uuid.uuid4()),
-            question=query,
+            question_id=question.question_id,
+            question=question.question,
             retrieved_sources=sources,
             answer=answer_text
         )
@@ -175,6 +177,10 @@ def answer_dataset(student_search_results_path, save_directory):
                 retrieved_sources=sources,
                 answer=answer_text
             ))
+            dump_json(StudentSearchResultsAndAnswer(
+                search_results=results,
+                k=k
+            ), student_search_results_path, save_directory)
 
         final_results = StudentSearchResultsAndAnswer(
             search_results=results,
@@ -190,9 +196,10 @@ def answer_dataset(student_search_results_path, save_directory):
 def evaluate(student_search_results_path, dataset_path):
     try:
         search_results = load_json(student_search_results_path)
-        truth = load_json(dataset_path)
-        truth_map = {q["question_id"]: q["sources"]
-                     for q in truth["rag_questions"] if "sources" in q}
+        truth = load_rag_dataset(dataset_path)
+        truth_map = {q.question_id: [s.model_dump() for s in q.sources]
+                     for q in truth.rag_questions
+                     if isinstance(q, AnsweredQuestion)}
         ks = [1, 3, 5, 10]
         totals = {k: 0 for k in ks}
         counted = 0
