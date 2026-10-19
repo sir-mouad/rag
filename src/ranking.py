@@ -12,7 +12,7 @@ def get_ranks(scores):
     return ranks
 
 
-def fuse(bm25_scores, sem_scores):
+def rrf(bm25_scores, sem_scores):
     return 1 / (60 + get_ranks(bm25_scores)) + 1 / (60 + get_ranks(sem_scores))
 
 
@@ -32,6 +32,6 @@ def top_chunks(query, k, chunks, bm25, embeddings, mode):
         if mode == "semantic" or bm25_scores.max() <= 0:
             scores = sem_scores
         else:
-            scores = fuse(bm25_scores, sem_scores)
+            scores = rrf(bm25_scores, sem_scores)
     top_k_indices = scores.argsort()[::-1][:k]
     return [chunks[i] for i in top_k_indices]

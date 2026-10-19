@@ -13,17 +13,17 @@ from src.ranking import top_chunks
 from src.cache import get_index, load_queries, dump_queries
 from src.embedding import dump_embeddings, EMBEDDINGS_PATH, update_embeddings
 from src.load_dump import dump_chunks, dump_tokenze, dump_history, dump_json, \
-    read_part, load_dataset, load_rag_dataset, load_json, \
-    load_search_results
+    read_part, load_dataset, load_json, \
+    load_search_results, load_rag_dataset
 
 
 def index(max_chunk_size=2000, semantic=False):
     try:
         if not isinstance(max_chunk_size, int) or \
-                not 1 <= max_chunk_size <= 2000:
+                max_chunk_size <= 0:
             print(
                 "Invalid Argument: --max_chunk_size must be an "
-                "integer between 1 and 2000")
+                "integer positif")
             return
         files = scan_files()
         if not files:
@@ -48,8 +48,9 @@ def index(max_chunk_size=2000, semantic=False):
             dump_embeddings(embeddings)
         print(
             f"Ingestion complete! Indexed {len(chunks)} chunks "
-            "under data/processed/ "
-            f"({len(changed)} files re-indexed)")
+            "under data/processed/ ")
+        if kept:
+            print(f"({len(changed)} files re-indexed)")
     except Exception as e:
         print(e)
 
@@ -72,7 +73,7 @@ def search(query, k, mode="bm25"):
 
 
 def search_dataset(dataset_path, k, save_directory, mode="bm25"):
-    # try:
+    try:
         if not isinstance(k, int) or k <= 0:
             print("Invalid Argument: --k must be a positive integer")
             return
@@ -98,8 +99,8 @@ def search_dataset(dataset_path, k, save_directory, mode="bm25"):
         result = StudentSearchResults(search_results=search_results, k=k)
         output_path = dump_json(result, dataset_path, save_directory)
         print(f"Saved student_search_results to {output_path}")
-    # except Exception as e:
-    #     print(e)
+    except Exception as e:
+        print(e)
 
 
 def answer(query, k, mode="bm25"):
