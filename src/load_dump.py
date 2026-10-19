@@ -2,6 +2,8 @@ import json
 import pickle
 import os
 from pathlib import Path
+from pydantic import ValidationError
+from src.models import RagDataset
 
 
 def dump_chunks(chunks):
@@ -40,14 +42,18 @@ def load_tokenze():
         return pickle.load(f)
 
 
-def load_dataset(dataset_path):
-    data = load_json(dataset_path)
+def load_rag_dataset(path):
+    data = load_json(path)
     try:
-        questions = data["rag_questions"]
-        return [(q["question_id"], q["question"]) for q in questions]
-    except (KeyError, TypeError):
-        raise ValueError(f"Invalid dataset: {dataset_path} must contain "
+        return RagDataset.model_validate(data)
+    except ValidationError:
+        raise ValueError(f"Invalid dataset: {path} must contain "
                          "rag_questions with question_id and question")
+
+
+def load_dataset(dataset_path):
+    dataset = load_rag_dataset(dataset_path)
+    return [(q.question_id, q.question) for q in dataset.rag_questions]
 
 
 def load_search_results(path):
