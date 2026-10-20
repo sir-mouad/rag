@@ -3,6 +3,16 @@ from src.embedding import load_embeddings
 from src.ranking import top_chunks, MODES
 
 
+def check_args(query, k):
+    if not isinstance(k, int) or k <= 0:
+        print("Invalid Argument: --k must be a positive integer")
+        return False
+    if not query.strip():
+        print("Invalid Argument: query must not be empty")
+        return False
+    return True
+
+
 def get_embeddings(chunks, mode):
     if mode not in MODES:
         raise ValueError("mode must be bm25, semantic or hybrid")

@@ -1,20 +1,21 @@
-from src.helpers import check_args, is_found, merge_index, load_old_index
-from src.generator import load_model, build_prompt, get_answer_text
-from src.models import MinimalSource, MinimalSearchResults, \
-    StudentSearchResults, MinimalAnswer, StudentSearchResultsAndAnswer, \
-    AnsweredQuestion, UnansweredQuestion
 import fire
 import os
 import shutil
 from tqdm import tqdm
 from src.indexer import scan_files
-from src.retrieval import retrieve, get_embeddings
+from src.retrieval import retrieve, get_embeddings, check_args
 from src.ranking import top_chunks
 from src.cache import get_index, load_queries, dump_queries
 from src.embedding import dump_embeddings, EMBEDDINGS_PATH, update_embeddings
 from src.load_dump import dump_chunks, dump_tokenze, dump_history, dump_json, \
     read_part, load_dataset, load_json, \
     load_search_results, load_rag_dataset
+from src.history import merge_index, load_old_index
+from src.evaluate import is_found
+from src.generator import load_model, build_prompt, get_answer_text
+from src.models import MinimalSource, MinimalSearchResults, \
+    StudentSearchResults, MinimalAnswer, StudentSearchResultsAndAnswer, \
+    AnsweredQuestion, UnansweredQuestion
 
 
 def index(max_chunk_size=2000, semantic=False):
@@ -198,15 +199,15 @@ def evaluate(student_search_results_path, dataset_path):
     try:
         search_results = load_json(student_search_results_path)
         truth = load_rag_dataset(dataset_path)
-        truth_map = {q.question_id: [s.model_dump() for s in q.sources]
-                     for q in truth.rag_questions
-                     if isinstance(q, AnsweredQuestion)}
+        correct_sources = {q.question_id: [s.model_dump() for s in q.sources]
+                           for q in truth.rag_questions
+                           if isinstance(q, AnsweredQuestion)}
         ks = [1, 3, 5, 10]
         totals = {k: 0 for k in ks}
         counted = 0
         for res in tqdm(search_results["search_results"],
                         desc="Evaluating", unit="question"):
-            correct = truth_map.get(res["question_id"])
+            correct = correct_sources.get(res["question_id"])
             if not correct:
                 continue
             counted += 1
