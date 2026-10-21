@@ -15,20 +15,20 @@ def build_bm25(tokenized):
     return BM25Okapi(tokenized)
 
 
-def index_stamp():
-    stamp = []
+def index_signature():
+    signature = []
     for path in (CHUNKS_PATH, TOKENIZED_PATH):
         info = os.stat(path)
-        stamp.append([info.st_mtime_ns, info.st_size])
-    return stamp
+        signature.append([info.st_mtime_ns, info.st_size])
+    return signature
 
 
 def get_index():
     try:
-        stamp = index_stamp()
+        signature = index_signature()
         with open(INDEX_CACHE, "rb") as f:
             cache = pickle.load(f)
-        if cache["stamp"] == stamp:
+        if cache["signature"] == signature:
             return cache["chunks"], cache["bm25"]
     except Exception:
         pass
@@ -39,7 +39,7 @@ def get_index():
         os.makedirs(CACHE_DIR, exist_ok=True)
         tmp = INDEX_CACHE + ".tmp"
         with open(tmp, "wb") as f:
-            pickle.dump({"stamp": index_stamp(), "chunks": chunks,
+            pickle.dump({"signature": index_signature(), "chunks": chunks,
                          "bm25": bm25}, f)
         os.replace(tmp, INDEX_CACHE)
     except Exception:
@@ -51,7 +51,7 @@ def load_queries():
     try:
         with open(QUERY_CACHE, "r", encoding="utf-8") as f:
             data = json.load(f)
-        if data["stamp"] == index_stamp():
+        if data["signature"] == index_signature():
             return data["entries"]
     except Exception:
         pass
@@ -62,6 +62,6 @@ def dump_queries(entries):
     try:
         os.makedirs(CACHE_DIR, exist_ok=True)
         with open(QUERY_CACHE, "w", encoding="utf-8") as f:
-            json.dump({"stamp": index_stamp(), "entries": entries}, f)
+            json.dump({"signature": index_signature(), "entries": entries}, f)
     except Exception:
         pass
