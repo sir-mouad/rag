@@ -4,6 +4,12 @@ import re
 import ast
 from tqdm import tqdm
 
+def split_long_lines(text, max_chunk_size):
+    pieces = []
+    for line in text.splitlines(keepends=True):
+        for i in range(0, len(line), max_chunk_size):
+            pieces.append(line[i:i + max_chunk_size])
+    return pieces
 
 def chunk_python(path, content, max_chunk_size):
     if len(content) <= max_chunk_size:
@@ -56,7 +62,7 @@ def chunk_python(path, content, max_chunk_size):
             continue
         pos = start
         current_start = start
-        for line in section.splitlines(keepends=True):
+        for line in split_long_lines(section, max_chunk_size):
             if pos + len(line) - current_start > max_chunk_size and \
                     pos != current_start:
                 section = content[current_start:pos]
@@ -76,12 +82,6 @@ def chunk_python(path, content, max_chunk_size):
     return chunks
 
 
-def split_long_lines(text, max_chunk_size):
-    pieces = []
-    for line in text.splitlines(keepends=True):
-        for i in range(0, len(line), max_chunk_size):
-            pieces.append(line[i:i + max_chunk_size])
-    return pieces
 
 
 def chunk_markdown(path, content, max_chunk_size):

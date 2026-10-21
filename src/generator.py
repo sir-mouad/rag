@@ -14,6 +14,8 @@ def build_prompt(query, content):
     return (
         "Answer the question using ONLY information "
         "explicitly stated in the context. "
+        "If the answer is not present in the context, "
+        "respond exactly: I don't know."
         f"Context:\n{content}\n\n"
         f"Question: {query}"
     )
