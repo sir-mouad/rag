@@ -1,3 +1,5 @@
+from typing import Any, Dict, List, cast
+
 import fire
 import os
 import shutil
@@ -18,7 +20,8 @@ from src.models import MinimalSource, MinimalSearchResults, \
     AnsweredQuestion, UnansweredQuestion
 
 
-def index(max_chunk_size=2000, semantic=False):
+def index(max_chunk_size: int = 2000, semantic: bool = False) -> None:
+    """Build or update the index under data/processed/."""
     try:
         if not isinstance(max_chunk_size, int) or \
                 max_chunk_size <= 0:
@@ -56,7 +59,8 @@ def index(max_chunk_size=2000, semantic=False):
         print(e)
 
 
-def search(query, k, mode="bm25"):
+def search(query: str, k: int, mode: str = "bm25") -> None:
+    """Print the top-k source locations for a single query."""
     try:
         query = str(query)
         if not check_args(query, k):
@@ -73,7 +77,13 @@ def search(query, k, mode="bm25"):
         print(e)
 
 
-def search_dataset(dataset_path, k, save_directory, mode="bm25"):
+def search_dataset(
+    dataset_path: str,
+    k: int,
+    save_directory: str,
+    mode: str = "bm25",
+) -> None:
+    """Search all dataset questions and save StudentSearchResults JSON."""
     try:
         if not isinstance(k, int) or k <= 0:
             print("Invalid Argument: --k must be a positive integer")
@@ -85,7 +95,8 @@ def search_dataset(dataset_path, k, save_directory, mode="bm25"):
         for ques_id, ques in tqdm(questions, desc="searching",
                                   unit="question"):
             sources = []
-            for chunk in top_chunks(ques, k, chunks, bm25, embeddings, mode):
+            results_top = top_chunks(ques, k, chunks, bm25, embeddings, mode)
+            for chunk in cast(List[Any], results_top):
                 sources.append(MinimalSource(file_path=chunk["file_path"],
                                              first_character_index=chunk[
                     "first_character_index"],
@@ -104,7 +115,8 @@ def search_dataset(dataset_path, k, save_directory, mode="bm25"):
         print(e)
 
 
-def answer(query, k, mode="bm25"):
+def answer(query: str, k: int, mode: str = "bm25") -> None:
+    """Answer one query from retrieved context and print JSON."""
     try:
         query = str(query)
         if not check_args(query, k):
@@ -146,7 +158,11 @@ def answer(query, k, mode="bm25"):
         print(e)
 
 
-def answer_dataset(student_search_results_path, save_directory):
+def answer_dataset(
+    student_search_results_path: str,
+    save_directory: str,
+) -> None:
+    """Generate answers for saved search results and save them as JSON."""
     try:
         search_results = load_search_results(student_search_results_path)
         k = search_results["k"]
@@ -195,7 +211,8 @@ def answer_dataset(student_search_results_path, save_directory):
         print(e)
 
 
-def evaluate(student_search_results_path, dataset_path):
+def evaluate(student_search_results_path: str, dataset_path: str) -> None:
+    """Compute recall@k against a ground-truth dataset for local testing."""
     try:
         search_results = load_json(student_search_results_path)
         truth = load_rag_dataset(dataset_path)
@@ -203,7 +220,7 @@ def evaluate(student_search_results_path, dataset_path):
                            for q in truth.rag_questions
                            if isinstance(q, AnsweredQuestion)}
         ks = [1, 3, 5, 10]
-        totals = {k: 0 for k in ks}
+        totals: Dict[int, float] = {k: 0.0 for k in ks}
         counted = 0
         for res in tqdm(search_results["search_results"],
                         desc="Evaluating", unit="question"):

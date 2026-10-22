@@ -1,8 +1,12 @@
 import re
+from typing import List
+
+from src.models import Chunk
 from tqdm import tqdm
 
 
-def build_token(text):
+def build_token(text: str) -> List[str]:
+    """Split text into lowercase tokens, including name sub-parts."""
     split_text = re.findall(r"\w+", text)
     new_split_text = []
     for str in split_text:
@@ -15,7 +19,8 @@ def build_token(text):
     return [s.lower() for s in new_split_text]
 
 
-def tokenizer(chunks):
+def tokenizer(chunks: List[Chunk]) -> List[List[str]]:
+    """Tokenize the text of every chunk and return one token list per chunk."""
     tokenized = []
     for c in tqdm(chunks, desc="tokenized", unit=" chunk"):
         tokenized.append(build_token(c.text))

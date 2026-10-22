@@ -1,10 +1,16 @@
+from typing import Any, Dict, List, Set, Tuple
+
 from src.load_dump import load_history, load_chunks, load_tokenze
 from src.indexer import indexer
 from src.tokenizer import tokenizer
 from src.models import Chunk
 
 
-def load_old_index(max_chunk_size):
+OldIndex = Tuple[Dict[str, Any], List[Chunk], List[List[str]]]
+
+
+def load_old_index(max_chunk_size: int) -> OldIndex:
+    """Load the previous index, or empty values if it is unusable."""
     old_files = load_history(max_chunk_size)
     if not old_files:
         return {}, [], []
@@ -22,7 +28,12 @@ def load_old_index(max_chunk_size):
     return old_files, old_chunks, old_tokenized
 
 
-def merge_index(files, old, max_chunk_size):
+def merge_index(
+    files: Dict[str, List[int]],
+    old: OldIndex,
+    max_chunk_size: int,
+) -> Tuple[List[Chunk], List[List[str]], List[Chunk], List[int], Set[str]]:
+    """Merge kept old chunks with re-indexed chunks for changed files."""
     old_files, old_chunks, old_tokenized = old
     changed = set()
     for path, stat in files.items():

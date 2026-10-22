@@ -1,17 +1,22 @@
 from pathlib import Path
+from typing import Dict, List, Optional, Set
 from src.models import Chunk
 import re
 import ast
 from tqdm import tqdm
 
-def split_long_lines(text, max_chunk_size):
+
+def split_long_lines(text: str, max_chunk_size: int) -> List[str]:
+    """Split each line into pieces no longer than max_chunk_size characters."""
     pieces = []
     for line in text.splitlines(keepends=True):
         for i in range(0, len(line), max_chunk_size):
             pieces.append(line[i:i + max_chunk_size])
     return pieces
 
-def chunk_python(path, content, max_chunk_size):
+
+def chunk_python(path: str, content: str, max_chunk_size: int) -> List[Chunk]:
+    """Split a Python file into chunks at top-level definitions."""
     if len(content) <= max_chunk_size:
         return [Chunk(
             file_path=path,
@@ -82,9 +87,12 @@ def chunk_python(path, content, max_chunk_size):
     return chunks
 
 
-
-
-def chunk_markdown(path, content, max_chunk_size):
+def chunk_markdown(
+    path: str,
+    content: str,
+    max_chunk_size: int,
+) -> List[Chunk]:
+    """Split a Markdown or text file into chunks at headers."""
     if len(content) <= max_chunk_size:
         return [Chunk(
             file_path=path,
@@ -143,7 +151,12 @@ def chunk_markdown(path, content, max_chunk_size):
     return chunks
 
 
-def load_and_chunk_file(path, max_chunk_size, cwd):
+def load_and_chunk_file(
+    path: Path,
+    max_chunk_size: int,
+    cwd: Path,
+) -> List[Chunk]:
+    """Read one file and chunk it with the strategy matching its extension."""
     try:
         content = path.read_text(encoding="utf-8")
     except Exception as e:
@@ -157,9 +170,11 @@ def load_and_chunk_file(path, max_chunk_size, cwd):
     elif path.suffix == ".md" or path.suffix == ".txt":
         return (chunk_markdown(str(path.relative_to(cwd)),
                                content, max_chunk_size))
+    return []
 
 
-def scan_files():
+def scan_files() -> Dict[str, List[int]]:
+    """Scan the raw corpus and return each file's mtime and size."""
     cwd = Path.cwd()
     raw = cwd / "data" / "raw" / "vllm-0.10.1"
     if not raw.is_dir():
@@ -173,7 +188,11 @@ def scan_files():
     return files
 
 
-def indexer(max_chunk_size, only=None):
+def indexer(
+    max_chunk_size: int,
+    only: Optional[Set[str]] = None,
+) -> List[Chunk]:
+    """Chunk all corpus files, or only those listed in `only`."""
 
     cwd = Path.cwd()
     raw = cwd / "data" / "raw" / "vllm-0.10.1"

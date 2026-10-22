@@ -1,16 +1,20 @@
+from typing import Any, Tuple
+
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 MODEL_NAME = "Qwen/Qwen3-0.6B"
 
 
-def load_model(model_name=MODEL_NAME):
+def load_model(model_name: str = MODEL_NAME) -> Tuple[Any, Any]:
+    """Load the tokenizer and causal language model from Hugging Face."""
     llm_tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(
         model_name, torch_dtype="auto")
     return llm_tokenizer, model
 
 
-def build_prompt(query, content):
+def build_prompt(query: str, content: str) -> str:
+    """Build a prompt that limits the answer to the given context."""
     return (
         "Answer the question using ONLY information "
         "explicitly stated in the context. "
@@ -21,7 +25,8 @@ def build_prompt(query, content):
     )
 
 
-def get_answer_text(prompt, llm_tokenizer, model):
+def get_answer_text(prompt: str, llm_tokenizer: Any, model: Any) -> str:
+    """Run the model on a prompt and return the decoded answer text."""
     messages = [{"role": "user", "content": prompt}]
     inputs = llm_tokenizer.apply_chat_template(
         messages,
@@ -35,4 +40,4 @@ def get_answer_text(prompt, llm_tokenizer, model):
     answer_text = llm_tokenizer.decode(
         output[0][inputs["input_ids"].shape[-1]:], skip_special_tokens=True
     )
-    return answer_text
+    return str(answer_text)

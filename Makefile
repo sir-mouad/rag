@@ -2,10 +2,13 @@ install:
 		uv sync
 
 run:
-	uv run python -m src $(cmd)
+	uv run python -m src $(filter-out run,$(MAKECMDGOALS))
 
 debug:
-	uv run python -m pdb src $(cmd)
+	uv run python -m pdb src $(filter-out run,$(MAKECMDGOALS))
+
+%:
+	@:
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +

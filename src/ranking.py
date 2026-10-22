@@ -1,22 +1,36 @@
+from typing import Any, List, Optional
+
 import numpy as np
+from rank_bm25 import BM25Okapi
+from src.models import Chunk
 from src.tokenizer import build_token
 from src.embedding import semantic_scores
 
 MODES = ("bm25", "semantic", "hybrid")
 
 
-def get_ranks(scores):
+def get_ranks(scores: Any) -> Any:
+    """Return the rank of each score, where the highest score has rank 0."""
     order = scores.argsort()[::-1]
     ranks = np.empty(len(scores))
     ranks[order] = np.arange(len(scores))
     return ranks
 
 
-def rrf(bm25_scores, sem_scores):
+def rrf(bm25_scores: Any, sem_scores: Any) -> Any:
+    """Combine two score arrays with reciprocal rank fusion."""
     return 1 / (60 + get_ranks(bm25_scores)) + 1 / (60 + get_ranks(sem_scores))
 
 
-def top_chunks(query, k, chunks, bm25, embeddings, mode):
+def top_chunks(
+    query: str,
+    k: int,
+    chunks: List[Chunk],
+    bm25: BM25Okapi,
+    embeddings: Optional[Any],
+    mode: str,
+) -> List[Chunk]:
+    """Return the top-k chunks for a query in the chosen mode."""
     if mode not in MODES:
         raise ValueError("mode must be bm25, semantic or hybrid")
     query_tok = build_token(query)
