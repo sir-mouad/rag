@@ -112,8 +112,11 @@ def chunk_markdown(
                 headers.append(offset)
             offset += len(line)
         headers.append(len(content))
+
     if Path(path).suffix == ".txt":
-        headers = [m.end() for m in re.finditer(r"\n\s*\n", content)]
+        headers = []
+        for head in re.finditer(r"\n\s*\n", content):
+            headers.append(head)
         heading = ""
 
     true_headers = [0]

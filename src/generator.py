@@ -9,7 +9,7 @@ def load_model(model_name: str = MODEL_NAME) -> Tuple[Any, Any]:
     """Load the tokenizer and causal language model from Hugging Face."""
     llm_tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(
-        model_name, torch_dtype="auto")
+        model_name)
     return llm_tokenizer, model
 
 
