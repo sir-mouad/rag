@@ -16,6 +16,7 @@ class Chunk(BaseModel):
     first_character_index: int
     last_character_index: int
     text: str
+    heading: str = ""
 
 
 class UnansweredQuestion(BaseModel):

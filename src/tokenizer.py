@@ -23,5 +23,5 @@ def tokenizer(chunks: List[Chunk]) -> List[List[str]]:
     """Tokenize the text of every chunk and return one token list per chunk."""
     tokenized = []
     for c in tqdm(chunks, desc="tokenized", unit=" chunk"):
-        tokenized.append(build_token(c.text))
+        tokenized.append(build_token(c.file_path  + " " + c.heading  + "" +c.text))
     return tokenized
