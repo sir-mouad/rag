@@ -100,9 +100,8 @@ def chunk_markdown(
             last_character_index=len(content),
             text=content
         )]
-
+    # if Path(path).suffix == ".md":
     match = re.findall(r"(?m)^#+ [^\r\n]*", content)
-
     headers = [0]
     offset = 0
     for line in content.splitlines(keepends=True):
@@ -111,6 +110,8 @@ def chunk_markdown(
             headers.append(offset)
         offset += len(line)
     headers.append(len(content))
+    # if Path(path).suffix == ".txt":
+    #     headers = [m.end() for m in re.finditer(r"\n\s*\n", content)]
 
     true_headers = [0]
     index = 0
