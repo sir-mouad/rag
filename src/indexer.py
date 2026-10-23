@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, Any
 from src.models import Chunk
 import re
 import ast
@@ -100,7 +100,7 @@ def chunk_markdown(
             last_character_index=len(content),
             text=content
         )]
-
+    heading: list[Any]
     if Path(path).suffix == ".md":
         match = re.findall(r"(?m)^#+ [A-Z][^\r\n]*", content)
         heading = [h for h in match]
@@ -116,8 +116,8 @@ def chunk_markdown(
     if Path(path).suffix == ".txt":
         headers = []
         for head in re.finditer(r"\n\s*\n", content):
-            headers.append(head)
-        heading = ""
+            headers.append(head.end())
+        heading = [""]
 
     true_headers = [0]
     index = 0

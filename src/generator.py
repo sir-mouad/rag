@@ -36,7 +36,7 @@ def get_answer_text(prompt: str, llm_tokenizer: Any, model: Any) -> str:
         return_tensors="pt",
         enable_thinking=False
     )
-    output = model.generate(**inputs, max_new_tokens=100, do_sample=False)
+    output = model.generate(**inputs, max_new_tokens=200, do_sample=False)
     answer_text = llm_tokenizer.decode(
         output[0][inputs["input_ids"].shape[-1]:], skip_special_tokens=True
     )

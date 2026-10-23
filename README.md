@@ -225,3 +225,17 @@ uv run python -m src search_dataset \
   --k 10 \
   --save_directory data/output/search_results/UnansweredQuestions
 ```
+
+# Resources
+
+- [what is vllm? ](https://youtube.com/shorts/5Y_JM6C9xOA?si=NSJZBexfXTuNg1NO)
+- [What are Word Embeddings?](https://youtu.be/wgfSDrqYMJ4?si=SClbPPNkhctuuXvY)
+- [Understanding Reciprocal Rank Fusion in Hybrid Search [Advanced RAG]](https://youtu.be/6dDvfGrxFns?si=EexLNB5JyMHH5Qr4)
+- [Lexical Search (BM25).. Introduction and TF-IDF](https://youtu.be/L26Lm1lePgA?si=3_Zo2Z1WMHnzuADj)
+- [What is an Embedding Model ?](https://youtu.be/BOqtII2Al4s?si=MjdUlm_w0WH59nzL)
+- [Embedding Models](https://www.geeksforgeeks.org/nlp/what-are-embedding-models/)
+- [Retrieval-Augmented Generation (RAG)](https://www.geeksforgeeks.org/nlp/what-is-retrieval-augmented-generation-rag/)
+- [Python Fire Module](https://www.geeksforgeeks.org/python/python-fire-module/)
+- [Terminal Progress Bar Using tqdm](https://www.geeksforgeeks.org/python/python-how-to-make-a-terminal-progress-bar-using-tqdm/)
+- [Python pathlib Module](https://www.geeksforgeeks.org/python/pathlib-module-in-python/)
+- [Python shutil Module](https://www.w3schools.com/python/ref_module_shutil.asp)
