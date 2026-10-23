@@ -40,7 +40,7 @@ def index(max_chunk_size: int = 2000, semantic: bool = False) -> None:
             print("Error: no chunks were created, nothing to index.")
             return
         embeddings = None
-        if semantic == True:
+        if semantic is True:
             embeddings = update_embeddings(old[1], kept, new_chunks, chunks)
         if os.path.exists(EMBEDDINGS_PATH):
             os.remove(EMBEDDINGS_PATH)

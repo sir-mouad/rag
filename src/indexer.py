@@ -100,7 +100,7 @@ def chunk_markdown(
             last_character_index=len(content),
             text=content
         )]
-    
+
     if Path(path).suffix == ".md":
         match = re.findall(r"(?m)^#+ [A-Z][^\r\n]*", content)
         heading = [h for h in match]
@@ -120,7 +120,9 @@ def chunk_markdown(
     index = 0
     while index + 1 < len(headers):
         h_range = headers[index + 1] - true_headers[-1]
-        if h_range <= max_chunk_size and re.findall(r"(?m)^#{2,} [A-Z][^\r\n]*", content[true_headers[-1]:headers[index + 1]]):
+        if h_range <= max_chunk_size and \
+            re.findall(r"(?m)^#{2,} [A-Z][^\r\n]*",
+                       content[true_headers[-1]:headers[index + 1]]):
             index += 1
         else:
             true_headers.append(headers[index])
@@ -134,7 +136,8 @@ def chunk_markdown(
             if not section.strip():
                 continue
             chunks.append(Chunk(file_path=path, first_character_index=start,
-                          last_character_index=end, text=section, heading=str(heading)))
+                          last_character_index=end, text=section,
+                          heading=str(heading)))
             continue
         pos = start
         current_start = start
@@ -144,7 +147,8 @@ def chunk_markdown(
                 chunks.append(Chunk(file_path=path,
                                     first_character_index=current_start,
                                     last_character_index=pos,
-                                    text=content[current_start:pos], heading=str(heading)))
+                                    text=content[current_start:pos],
+                                    heading=str(heading)))
                 current_start = pos
             pos += len(line)
         chunks.append(Chunk(file_path=path,
